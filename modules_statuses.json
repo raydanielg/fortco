@@ -1,0 +1,18 @@
+{
+    "Dashboard": true,
+    "RealEstate": true,
+    "Construction": true,
+    "LoanManagement": true,
+    "Appointment": true,
+    "Portfolio": true,
+    "Content": true,
+    "UserManagement": true,
+    "Report": true,
+    "Communication": true,
+    "Settings": true,
+    "Inventory": true,
+    "Support": true,
+    "Analytics": true,
+    "Payment": true,
+    "Notification": true
+}
