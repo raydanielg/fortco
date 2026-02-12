@@ -1,59 +1,222 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Fortco ERP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Fortco ERP is a modular business platform built for **real estate** and **construction** operations in Tanzania.
 
-## About Laravel
+It combines a modern Laravel backend with a React (Inertia.js) frontend and a module-driven architecture (Nwidart/Modules) to keep features isolated, scalable, and easy to maintain.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Highlights
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Modular architecture**
+  - Feature areas live under `Modules/*` and can ship with their own config, migrations, routes, and assets.
+- **Modern UI**
+  - React + TailwindCSS with a clean landing site and reusable section components.
+- **Fast local development**
+  - Vite for hot reload.
+- **Built for real workflows**
+  - Clear navigation, role-ready structure, and room to expand into ERP modules.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
 
-## Learning Laravel
+- **Backend**
+  - Laravel
+  - PHP (see `composer.json`)
+- **Frontend**
+  - React 18
+  - Inertia.js
+  - Vite
+  - TailwindCSS
+- **Modules**
+  - Nwidart/Modules (module folders under `Modules/`)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Repository Structure (High level)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `app/`
+  - Core Laravel application code.
+- `routes/`
+  - `web.php`, auth routes, etc.
+- `resources/js/`
+  - React/Inertia pages and components.
+  - Home sections live in `resources/js/Pages/Home/sections/`.
+- `resources/views/`
+  - Blade views (Inertia root layout, vendor views).
+- `Modules/`
+  - Independent modules such as Analytics, Appointment, Communication, Construction, etc.
+- `public/`
+  - Public assets including images and slides.
 
-## Laravel Sponsors
+## Requirements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Make sure you have these installed locally:
 
-### Premium Partners
+- PHP (compatible with your Laravel version)
+- Composer
+- Node.js + npm
+- A database (MySQL / MariaDB recommended; SQLite also works for quick local dev)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Getting Started (Local Setup)
+
+### 1) Clone and install dependencies
+
+```bash
+git clone <your-repo-url>
+cd fortco-erp
+
+composer install
+npm install
+```
+
+### 2) Environment configuration
+
+Create `.env` from the example:
+
+```bash
+cp .env.example .env
+```
+
+Generate the app key:
+
+```bash
+php artisan key:generate
+```
+
+Configure your database in `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=fortco
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 3) Run migrations + seed (optional)
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+If you have module migrations, run them as well if your module setup requires it.
+
+### 4) Run the app
+
+In two terminals:
+
+```bash
+php artisan serve
+```
+
+```bash
+npm run dev
+```
+
+Then open:
+
+- `http://127.0.0.1:8000`
+
+## Common Scripts
+
+### Frontend
+
+- `npm run dev`
+  - Starts Vite dev server.
+- `npm run build`
+  - Builds production assets.
+
+### Backend
+
+- `php artisan serve`
+  - Runs the local PHP server.
+- `php artisan migrate`
+  - Runs database migrations.
+
+## Modules
+
+Modules live in the `Modules/` folder.
+
+Each module typically contains:
+
+- `app/` (controllers, actions, models inside the module)
+- `config/`
+- `database/` (migrations/seeders)
+- `resources/` (module views/assets)
+- `routes/`
+- `module.json`
+
+### Adding a new module
+
+If you are using `nwidart/laravel-modules`, modules can be generated via artisan commands (depending on your installed package configuration). If you prefer, you can also manually add a new module folder following the existing module patterns.
+
+## UI / Frontend Notes
+
+The landing page sections are organized in:
+
+- `resources/js/Pages/Home/sections/`
+
+Examples:
+
+- `AboutUs.jsx` (Who we are)
+- `Blogs.jsx` (blog carousel)
+- `Testimonials.jsx` (quote-style testimonials)
+- `ContactUs.jsx` (contact form + details)
+- `Footer.jsx`
+
+## Configuration Notes
+
+### Tailwind
+
+Tailwind is configured in `tailwind.config.js`.
+
+- Dark mode: `darkMode: 'class'`
+- Primary color palette available under `theme.extend.colors.primary`
+
+### Vite
+
+Vite config lives in `vite.config.js`.
+
+## Troubleshooting
+
+### Vite build issues
+
+- If an import fails, confirm the package exists in `package.json` and was installed.
+- Remove stale caches if needed:
+
+```bash
+rm -rf node_modules/.vite
+```
+
+Then restart `npm run dev`.
+
+### Storage / permissions
+
+If you run into file permission issues on a server:
+
+- Ensure `storage/` and `bootstrap/cache/` are writable.
+
+### App key / encryption issues
+
+If you see errors related to `APP_KEY`, run:
+
+```bash
+php artisan key:generate
+```
+
+## Security
+
+If you discover a security issue, do not open a public issue. Share details privately with the maintainers.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Contributions are welcome.
 
-## Code of Conduct
+Suggested workflow:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Create a feature branch
+- Add/adjust tests where relevant
+- Keep UI changes consistent with existing Tailwind styles
+- Open a PR with a clear description and screenshots for UI changes
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the **MIT License**. See the `LICENSE` file.

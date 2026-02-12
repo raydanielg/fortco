@@ -11,6 +11,8 @@ export default function AuthenticatedLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
+    const isSuperAdmin = user.roles && user.roles.includes('Super Admin');
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="border-b border-gray-100 bg-white">
@@ -30,6 +32,20 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                {isSuperAdmin && (
+                                    <>
+                                        <NavLink href="#" active={false}>
+                                            User Management
+                                        </NavLink>
+                                        <NavLink href="#" active={false}>
+                                            Roles & Permissions
+                                        </NavLink>
+                                        <NavLink href="#" active={false}>
+                                            System Settings
+                                        </NavLink>
+                                    </>
+                                )}
                             </div>
                         </div>
 

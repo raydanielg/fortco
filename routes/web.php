@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminFaqController;
+use App\Http\Controllers\Admin\FrontSettingsController;
+use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -52,14 +55,57 @@ Route::get('/api/hero-slides', function () {
     return response()->json($urls);
 })->name('hero.slides');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/properties', function () {
+    return Inertia::render('Properties', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('properties.index');
+
+Route::get('/portfolio', function () {
+    return Inertia::render('Portfolio/Index', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('portfolio.page');
+
+Route::get('/gallery', function () {
+    return Inertia::render('Gallery/Index', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('gallery.page');
+
+Route::get('/about', function () {
+    return Inertia::render('About', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('about.page');
+
+Route::get('/services', function () {
+    return Inertia::render('Services', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('services.page');
+
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::prefix('admin')->group(function () {
+        Route::get('settings', [SettingsController::class, 'index'])->name('admin.settings');
+        Route::get('front-settings', [FrontSettingsController::class, 'index'])->name('admin.front-settings');
+        Route::get('faq', [AdminFaqController::class, 'index'])->name('admin.faq');
+    });
 });
 
 require __DIR__.'/auth.php';

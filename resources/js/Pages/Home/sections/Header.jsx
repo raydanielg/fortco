@@ -19,10 +19,10 @@ export default function Header({ canLogin, canRegister }) {
             name: 'About',
             href: '/about',
             children: [
-                { name: 'Company Profile', href: '/about' },
+                { name: 'Company Profile', href: '/about#company-profile' },
                 { name: 'Mission & Vision', href: '/about#mission-vision' },
                 { name: 'Team', href: '/about#team' },
-                { name: 'Partners', href: '/about#partners' },
+                { name: 'Partners', href: '/portfolio#partners' },
             ],
         },
         {
@@ -59,25 +59,25 @@ export default function Header({ canLogin, canRegister }) {
         },
         {
             name: 'Contact',
-            href: '/contact',
+            href: '/#contact',
             children: [
-                { name: 'Office Location', href: '/contact#office-location' },
-                { name: 'Email', href: '/contact#email' },
-                { name: 'Phone', href: '/contact#phone' },
-                { name: 'Social Media', href: '/contact#social-media' },
+                { name: 'Office Location', href: '/#contact' },
+                { name: 'Email', href: '/#contact' },
+                { name: 'Phone', href: '/#contact' },
+                { name: 'Social Media', href: '/#contact' },
             ],
         },
         {
             name: 'Blog',
-            href: '/blog',
+            href: '/#blogs',
             children: [
-                { name: 'News', href: '/blog#news' },
-                { name: 'Articles', href: '/blog#articles' },
-                { name: 'Tips', href: '/blog#tips' },
+                { name: 'News', href: '/#blogs' },
+                { name: 'Articles', href: '/#blogs' },
+                { name: 'Tips', href: '/#blogs' },
             ],
         },
-        { name: 'FAQ', href: '/faq' },
-        { name: 'Login', href: '/login' },
+        { name: 'FAQ', href: '/#contact' },
+        { name: 'Login', href: route('login') },
     ];
 
     return (
@@ -90,7 +90,7 @@ export default function Header({ canLogin, canRegister }) {
 
                     <div className="flex items-center gap-3 lg:order-3">
                         <Link
-                            href="/book"
+                            href="/#contact"
                             className="hidden lg:inline-flex items-center justify-center rounded-lg bg-brand-green-500 px-4 py-2 text-xs font-extrabold tracking-wider text-white hover:bg-brand-green-600"
                         >
                             BOOK ONLINE
@@ -123,39 +123,39 @@ export default function Header({ canLogin, canRegister }) {
                         <ul className="flex flex-col gap-1 mt-4 font-extrabold tracking-wider text-[11px] uppercase lg:flex-row lg:gap-7 lg:mt-0">
                             {navigation.map((item) => (
                                 <li key={item.name} className={item.children ? 'relative lg:group' : undefined}>
-                                    <a
+                                    <Link
                                         href={item.href}
                                         className="flex items-center rounded-lg px-3 py-2 text-black/70 hover:text-black hover:bg-black/5 lg:hover:bg-transparent lg:px-0"
                                         onClick={() => setMobileOpen(false)}
                                     >
                                         {item.name}
-                                    </a>
+                                    </Link>
 
                                     {item.children ? (
                                         <>
                                             <div className="hidden lg:block lg:invisible lg:absolute lg:left-0 lg:top-full lg:z-50 lg:mt-3 lg:w-64 lg:rounded-xl lg:border lg:border-black/10 lg:bg-white/90 lg:p-2 lg:opacity-0 lg:shadow-xl lg:backdrop-blur lg:transition lg:group-hover:visible lg:group-hover:opacity-100">
                                                 {item.children.map((child) => (
-                                                    <a
+                                                    <Link
                                                         key={child.name}
                                                         href={child.href}
                                                         className="block rounded-lg px-3 py-2 text-[11px] font-extrabold tracking-wider uppercase text-black/70 hover:bg-black/5 hover:text-black"
                                                     >
                                                         {child.name}
-                                                    </a>
+                                                    </Link>
                                                 ))}
                                             </div>
 
                                             <div className="lg:hidden -mt-1 mb-2">
                                                 <div className="grid gap-1 px-3">
                                                     {item.children.map((child) => (
-                                                        <a
+                                                        <Link
                                                             key={child.name}
                                                             href={child.href}
                                                             className="rounded-lg px-3 py-2 text-[11px] font-extrabold tracking-wider uppercase text-black/60 hover:bg-black/5 hover:text-black"
                                                             onClick={() => setMobileOpen(false)}
                                                         >
                                                             {child.name}
-                                                        </a>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                             </div>
@@ -165,7 +165,7 @@ export default function Header({ canLogin, canRegister }) {
                             ))}
                             <li className="lg:hidden">
                                 <Link
-                                    href="/book"
+                                    href="/#contact"
                                     className="mt-1 inline-flex w-full items-center justify-center rounded-lg bg-brand-green-500 px-4 py-2 text-xs font-extrabold tracking-wider text-white hover:bg-brand-green-600"
                                     onClick={() => setMobileOpen(false)}
                                 >
