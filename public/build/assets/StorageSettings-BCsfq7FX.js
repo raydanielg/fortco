@@ -1,0 +1,1 @@
+import{j as e}from"./app-C9QWUuoF.js";import t from"./SettingsSectionShell-CebwU-n4.js";function n(){return e.jsx(t,{title:"Storage Settings",description:"Configure storage disks, upload destinations, and retention preferences.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{n as default};

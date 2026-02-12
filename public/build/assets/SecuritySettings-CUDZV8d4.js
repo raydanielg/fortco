@@ -1,0 +1,1 @@
+import{j as t}from"./app-C9QWUuoF.js";import e from"./SettingsSectionShell-CebwU-n4.js";function r(){return t.jsx(e,{title:"Security Settings",description:"Configure password rules, login security, and system safeguards.",children:t.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{r as default};

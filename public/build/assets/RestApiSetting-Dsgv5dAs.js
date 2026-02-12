@@ -1,0 +1,1 @@
+import{j as e}from"./app-C9QWUuoF.js";import t from"./SettingsSectionShell-CebwU-n4.js";function n(){return e.jsx(t,{title:"Rest API Setting",description:"Manage API keys, tokens, and REST API access policies.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{n as default};

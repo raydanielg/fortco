@@ -1,0 +1,1 @@
+import{j as e}from"./app-C9QWUuoF.js";import t from"./SettingsSectionShell-CebwU-n4.js";function l(){return e.jsx(t,{title:"Module Settings",description:"Enable/disable modules and configure module-specific preferences.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{l as default};
