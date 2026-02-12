@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -17,6 +18,15 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::post('/locale', function (Request $request) {
+    $locale = (string) $request->input('locale', '');
+    if ($locale !== '') {
+        $request->session()->put('locale', $locale);
+    }
+
+    return back()->withCookie(cookie('locale', $locale, 60 * 24 * 365));
+})->name('locale.set');
 
 Route::get('/api/hero-slides', function () {
     $dir = public_path('slides');
@@ -54,6 +64,30 @@ Route::get('/api/hero-slides', function () {
 
     return response()->json($urls);
 })->name('hero.slides');
+
+Route::get('/api/timezones', function () {
+    $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+
+    $timezones = [];
+    foreach (\DateTimeZone::listIdentifiers() as $tz) {
+        $tzObj = new \DateTimeZone($tz);
+        $offsetSeconds = $tzObj->getOffset($now);
+        $sign = $offsetSeconds >= 0 ? '+' : '-';
+        $abs = abs($offsetSeconds);
+        $hours = str_pad((string) floor($abs / 3600), 2, '0', STR_PAD_LEFT);
+        $mins = str_pad((string) floor(($abs % 3600) / 60), 2, '0', STR_PAD_LEFT);
+
+        $timezones[] = [
+            'value' => $tz,
+            'offset' => $offsetSeconds,
+            'label' => "(GMT{$sign}{$hours}:{$mins}) {$tz}",
+        ];
+    }
+
+    usort($timezones, fn ($a, $b) => $a['offset'] <=> $b['offset']);
+
+    return response()->json($timezones);
+})->name('api.timezones');
 
 Route::get('/properties', function () {
     return Inertia::render('Properties', [
@@ -103,6 +137,18 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function () {
         Route::get('settings', [SettingsController::class, 'index'])->name('admin.settings');
+        Route::post('settings', [SettingsController::class, 'update'])->name('admin.settings.update');
+        Route::post('settings/upload', [SettingsController::class, 'updateUploadSettings'])->name('admin.settings.upload.update');
+        Route::post('settings/maps', [SettingsController::class, 'updateMapsSettings'])->name('admin.settings.maps.update');
+        Route::post('settings/language', [SettingsController::class, 'updateLanguageSettings'])->name('admin.settings.language.update');
+        Route::post('settings/language/auto-translate', [SettingsController::class, 'autoTranslateLanguages'])->name('admin.settings.language.auto_translate');
+        Route::post('settings/currency', [SettingsController::class, 'updateCurrencySettings'])->name('admin.settings.currency.update');
+        Route::post('settings/notification/smtp', [SettingsController::class, 'updateSmtpSettings'])->name('admin.settings.notification.smtp.update');
+        Route::post('settings/notification/sms', [SettingsController::class, 'updateSmsSettings'])->name('admin.settings.notification.sms.update');
+        Route::post('settings/profile', [SettingsController::class, 'updateProfileSettings'])->name('admin.settings.profile.update');
+        Route::post('settings/profile/avatar', [SettingsController::class, 'updateProfileAvatar'])->name('admin.settings.profile.avatar');
+        Route::post('settings/profile/documents', [SettingsController::class, 'uploadProfileDocument'])->name('admin.settings.profile.documents.upload');
+        Route::delete('settings/profile/documents/{mediaId}', [SettingsController::class, 'deleteProfileDocument'])->name('admin.settings.profile.documents.delete');
         Route::get('front-settings', [FrontSettingsController::class, 'index'])->name('admin.front-settings');
         Route::get('faq', [AdminFaqController::class, 'index'])->name('admin.faq');
     });
