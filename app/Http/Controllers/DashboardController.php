@@ -8,6 +8,7 @@ use App\Models\Message;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -324,6 +325,114 @@ class DashboardController extends Controller
                     'values' => [$messageUnread, max(0, $messageTotal - $messageUnread)],
                 ],
             ],
+            'generated_at' => now()->toISOString(),
+        ]);
+    }
+
+    public function systemHealth(Request $request): Response
+    {
+        $user = $request->user();
+        if (!$user || !$user->hasRole('Super Admin')) {
+            abort(403);
+        }
+
+        return Inertia::render('Sessions/Dashboard/SuperAdmin/SystemHealth/Index', [
+            'auth' => [
+                'user' => $user,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ],
+        ]);
+    }
+
+    public function systemHealthData(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->hasRole('Super Admin')) {
+            abort(403);
+        }
+
+        $checks = [
+            'db' => ['ok' => false, 'ms' => null, 'message' => ''],
+            'cache' => ['ok' => false, 'ms' => null, 'message' => ''],
+            'queue' => ['ok' => true, 'message' => ''],
+            'sessions' => ['ok' => true, 'message' => ''],
+        ];
+
+        $t0 = microtime(true);
+        try {
+            DB::select('select 1');
+            $checks['db']['ok'] = true;
+            $checks['db']['message'] = 'Connected';
+        } catch (\Throwable $e) {
+            $checks['db']['ok'] = false;
+            $checks['db']['message'] = $e->getMessage();
+        } finally {
+            $checks['db']['ms'] = (int) round((microtime(true) - $t0) * 1000);
+        }
+
+        $t1 = microtime(true);
+        try {
+            $key = 'healthcheck:'.now()->timestamp;
+            Cache::put($key, 'ok', 10);
+            $val = Cache::get($key);
+            $checks['cache']['ok'] = $val === 'ok';
+            $checks['cache']['message'] = $checks['cache']['ok'] ? 'OK' : 'Cache write/read failed';
+        } catch (\Throwable $e) {
+            $checks['cache']['ok'] = false;
+            $checks['cache']['message'] = $e->getMessage();
+        } finally {
+            $checks['cache']['ms'] = (int) round((microtime(true) - $t1) * 1000);
+        }
+
+        $queue = [
+            'driver' => (string) config('queue.default'),
+            'jobs' => null,
+            'failed_jobs' => null,
+        ];
+        try {
+            $queue['jobs'] = (int) DB::table('jobs')->count();
+            $queue['failed_jobs'] = (int) DB::table('failed_jobs')->count();
+            $checks['queue']['ok'] = true;
+            $checks['queue']['message'] = 'OK';
+        } catch (\Throwable $e) {
+            $checks['queue']['ok'] = false;
+            $checks['queue']['message'] = $e->getMessage();
+        }
+
+        $sessions = [
+            'driver' => (string) config('session.driver'),
+            'total' => null,
+            'active_15m' => null,
+        ];
+        try {
+            $sessions['total'] = (int) DB::table('sessions')->count();
+            $sessions['active_15m'] = (int) DB::table('sessions')
+                ->whereNotNull('user_id')
+                ->where('last_activity', '>=', now()->subMinutes(15)->timestamp)
+                ->count();
+            $checks['sessions']['ok'] = true;
+            $checks['sessions']['message'] = 'OK';
+        } catch (\Throwable $e) {
+            $checks['sessions']['ok'] = false;
+            $checks['sessions']['message'] = $e->getMessage();
+        }
+
+        $runtime = [
+            'php_version' => PHP_VERSION,
+            'laravel_version' => app()->version(),
+            'app_env' => (string) config('app.env'),
+            'app_debug' => (bool) config('app.debug'),
+            'timezone' => (string) config('app.timezone'),
+            'memory_usage_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+            'memory_peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+        ];
+
+        return response()->json([
+            'checks' => $checks,
+            'queue' => $queue,
+            'sessions' => $sessions,
+            'runtime' => $runtime,
             'generated_at' => now()->toISOString(),
         ]);
     }

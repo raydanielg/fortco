@@ -432,7 +432,7 @@ export default function Sidebar({
                 children: [
                     { label: 'Main Dashboard', href: route('dashboard') },
                     { label: 'Analytics', href: route('admin.analytics') },
-                    { label: 'System Health', href: '#' },
+                    { label: 'System Health', href: route('admin.system-health') },
                 ],
             },
             {

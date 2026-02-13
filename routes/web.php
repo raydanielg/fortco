@@ -152,6 +152,9 @@ Route::middleware('auth')->group(function () {
         Route::get('analytics', [DashboardController::class, 'analytics'])->name('admin.analytics');
         Route::get('analytics/data', [DashboardController::class, 'analyticsData'])->name('admin.analytics.data');
 
+        Route::get('system-health', [DashboardController::class, 'systemHealth'])->name('admin.system-health');
+        Route::get('system-health/data', [DashboardController::class, 'systemHealthData'])->name('admin.system-health.data');
+
         Route::prefix('user-management')->group(function () {
             Route::get('users', [UserManagementPagesController::class, 'users'])->name('admin.user-management.users');
             Route::get('employees', [UserManagementPagesController::class, 'employees'])->name('admin.user-management.employees');
