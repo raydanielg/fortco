@@ -1,1 +1,0 @@
-import{j as t}from"./app-C9QWUuoF.js";import e from"./SettingsSectionShell-CebwU-n4.js";function a(){return t.jsx(e,{title:"Database Backup Settings",description:"Configure backup schedule, destinations, and retention policy.",children:t.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{a as default};

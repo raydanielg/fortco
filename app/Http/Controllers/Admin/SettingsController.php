@@ -7,15 +7,88 @@ use App\Models\Employee;
 use App\Models\EmployeePaymentDetail;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class SettingsController extends Controller
 {
+    private function readModuleStatuses(): array
+    {
+        try {
+            $path = base_path('modules_statuses.json');
+            if (!File::exists($path)) {
+                return [];
+            }
+            $json = json_decode((string) File::get($path), true);
+            return is_array($json) ? $json : [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    private function writeModuleStatuses(array $statuses): void
+    {
+        $path = base_path('modules_statuses.json');
+        File::put($path, json_encode($statuses, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    private function listModules(): array
+    {
+        $dirs = [];
+        try {
+            $base = base_path('Modules');
+            if (!File::exists($base)) {
+                return [];
+            }
+            $items = File::directories($base);
+            foreach ($items as $dir) {
+                $name = basename($dir);
+                if ($name !== '' && $name[0] !== '.') {
+                    $dirs[] = $name;
+                }
+            }
+        } catch (\Throwable $e) {
+            $dirs = [];
+        }
+
+        sort($dirs);
+        return $dirs;
+    }
+
+    private function summarizeDisk(string $disk): array
+    {
+        try {
+            $files = Storage::disk($disk)->allFiles();
+            $count = count($files);
+            $bytes = 0;
+            foreach ($files as $path) {
+                try {
+                    $bytes += (int) Storage::disk($disk)->size($path);
+                } catch (\Throwable $e) {
+                    // ignore
+                }
+            }
+
+            return [
+                'files' => $count,
+                'bytes' => $bytes,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'files' => 0,
+                'bytes' => 0,
+            ];
+        }
+    }
+
     public function index(Request $request): Response
     {
         $employee = $request->user()?->employee;
@@ -33,6 +106,16 @@ class SettingsController extends Controller
                     'url' => $m->getUrl(),
                 ];
             }
+        }
+
+        $moduleStatuses = $this->readModuleStatuses();
+        $moduleNames = $this->listModules();
+        $moduleRows = [];
+        foreach ($moduleNames as $n) {
+            $moduleRows[] = [
+                'name' => $n,
+                'enabled' => array_key_exists($n, $moduleStatuses) ? (bool) $moduleStatuses[$n] : true,
+            ];
         }
 
         return Inertia::render('Sessions/Dashboard/SuperAdmin/Settings/Settings', [
@@ -58,6 +141,42 @@ class SettingsController extends Controller
                 'server_upload_max_filesize' => ini_get('upload_max_filesize') ?: '',
                 'server_post_max_size' => ini_get('post_max_size') ?: '',
             ],
+            'storageSettings' => [
+                'default_disk' => Setting::getValue('storage_default_disk', 'public'),
+                'quota_mb' => (int) Setting::getValue('storage_quota_mb', '1024'),
+                'retention_days' => (int) Setting::getValue('storage_retention_days', '0'),
+            ],
+            'storageStats' => (function () {
+                $public = $this->summarizeDisk('public');
+                $private = $this->summarizeDisk('local');
+
+                $mediaCount = 0;
+                $mediaBytes = 0;
+                try {
+                    $mediaCount = (int) DB::table('media')->count();
+                    $mediaBytes = (int) DB::table('media')->sum('size');
+                } catch (\Throwable $e) {
+                    $mediaCount = 0;
+                    $mediaBytes = 0;
+                }
+
+                $quotaMb = (int) Setting::getValue('storage_quota_mb', '1024');
+                $quotaBytes = max(0, $quotaMb) * 1024 * 1024;
+                $totalBytes = (int) $public['bytes'] + (int) $private['bytes'];
+                $usedPercent = $quotaBytes > 0 ? min(100, round(($totalBytes / $quotaBytes) * 100, 2)) : 0;
+
+                return [
+                    'public' => $public,
+                    'private' => $private,
+                    'media' => [
+                        'count' => $mediaCount,
+                        'bytes' => $mediaBytes,
+                    ],
+                    'total_bytes' => $totalBytes,
+                    'quota_bytes' => $quotaBytes,
+                    'used_percent' => $usedPercent,
+                ];
+            })(),
             'mapsSettings' => [
                 'google_maps_api_key' => Setting::getValue('google_maps_api_key', ''),
             ],
@@ -91,6 +210,80 @@ class SettingsController extends Controller
                 'decimals' => (int) Setting::getValue('currency_decimals', '2'),
                 'decimal_separator' => Setting::getValue('currency_decimal_separator', '.'),
                 'thousand_separator' => Setting::getValue('currency_thousand_separator', ','),
+            ],
+            'paymentSettings' => [
+                'provider' => Setting::getValue('payment_provider', 'pesapal'),
+                'webhook_secret' => Setting::getValue('payment_webhook_secret', ''),
+                'pesapal' => [
+                    'environment' => Setting::getValue('pesapal_environment', 'sandbox'),
+                    'consumer_key' => Setting::getValue('pesapal_consumer_key', ''),
+                    'consumer_secret' => Setting::getValue('pesapal_consumer_secret', ''),
+                ],
+                'selcom' => [
+                    'environment' => Setting::getValue('selcom_environment', 'sandbox'),
+                    'vendor_id' => Setting::getValue('selcom_vendor_id', ''),
+                    'api_key' => Setting::getValue('selcom_api_key', ''),
+                    'api_secret' => Setting::getValue('selcom_api_secret', ''),
+                ],
+                'zenopay' => [
+                    'environment' => Setting::getValue('zenopay_environment', 'sandbox'),
+                    'account_id' => Setting::getValue('zenopay_account_id', ''),
+                    'api_key' => Setting::getValue('zenopay_api_key', ''),
+                    'api_secret' => Setting::getValue('zenopay_api_secret', ''),
+                ],
+            ],
+            'socialLoginSettings' => [
+                'google' => [
+                    'enabled' => Setting::getValue('social_google_enabled', '0') === '1',
+                    'client_id' => Setting::getValue('social_google_client_id', ''),
+                    'client_secret' => Setting::getValue('social_google_client_secret', ''),
+                ],
+                'apple' => [
+                    'enabled' => Setting::getValue('social_apple_enabled', '0') === '1',
+                    'client_id' => Setting::getValue('social_apple_client_id', ''),
+                    'client_secret' => Setting::getValue('social_apple_client_secret', ''),
+                ],
+                'facebook' => [
+                    'enabled' => Setting::getValue('social_facebook_enabled', '0') === '1',
+                    'client_id' => Setting::getValue('social_facebook_client_id', ''),
+                    'client_secret' => Setting::getValue('social_facebook_client_secret', ''),
+                ],
+            ],
+            'googleCalendarSettings' => [
+                'enabled' => Setting::getValue('google_calendar_enabled', '0') === '1',
+                'client_id' => Setting::getValue('google_calendar_client_id', ''),
+                'client_secret_set' => Setting::getValue('google_calendar_client_secret', '') !== '',
+                'sync_enabled' => Setting::getValue('google_calendar_sync_enabled', '1') === '1',
+                'sync_interval_min' => (int) Setting::getValue('google_calendar_sync_interval_min', '10'),
+            ],
+            'themeSettings' => [
+                'direction' => Setting::getValue('theme_direction', 'ltr'),
+                'mode' => Setting::getValue('theme_mode', 'light'),
+                'bg' => Setting::getValue('theme_bg', '#f7f5f0'),
+            ],
+            'moduleSettings' => [
+                'modules' => $moduleRows,
+            ],
+            'rolePermissionSettings' => [
+                'roles' => Role::query()
+                    ->where('guard_name', 'web')
+                    ->orderBy('name')
+                    ->get()
+                    ->map(fn (Role $r) => [
+                        'id' => $r->id,
+                        'name' => $r->name,
+                        'permission_names' => $r->permissions->pluck('name')->values(),
+                    ])
+                    ->values(),
+                'permissions' => Permission::query()
+                    ->where('guard_name', 'web')
+                    ->orderBy('name')
+                    ->get()
+                    ->map(fn (Permission $p) => [
+                        'id' => $p->id,
+                        'name' => $p->name,
+                    ])
+                    ->values(),
             ],
             'employeeProfile' => [
                 'exists' => (bool) $employee,
@@ -336,6 +529,169 @@ class SettingsController extends Controller
         Setting::setValue('currency', $validated['currency_code'], 'app');
 
         return back()->with('status', 'Currency settings saved');
+    }
+
+    public function updateStorageSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'storage_default_disk' => ['required', 'string', Rule::in(['public', 'local'])],
+            'storage_quota_mb' => ['required', 'integer', 'min:0', 'max:1048576'],
+            'storage_retention_days' => ['required', 'integer', 'min:0', 'max:36500'],
+        ]);
+
+        Setting::setValue('storage_default_disk', $validated['storage_default_disk'], 'storage');
+        Setting::setValue('storage_quota_mb', (string) $validated['storage_quota_mb'], 'storage');
+        Setting::setValue('storage_retention_days', (string) $validated['storage_retention_days'], 'storage');
+
+        return back()->with('status', 'Storage settings saved');
+    }
+
+    public function updateSocialLoginSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'social_google_enabled' => ['nullable', 'boolean'],
+            'social_google_client_id' => ['nullable', 'string', 'max:255'],
+            'social_google_client_secret' => ['nullable', 'string', 'max:255'],
+
+            'social_apple_enabled' => ['nullable', 'boolean'],
+            'social_apple_client_id' => ['nullable', 'string', 'max:255'],
+            'social_apple_client_secret' => ['nullable', 'string', 'max:255'],
+
+            'social_facebook_enabled' => ['nullable', 'boolean'],
+            'social_facebook_client_id' => ['nullable', 'string', 'max:255'],
+            'social_facebook_client_secret' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Setting::setValue('social_google_enabled', !empty($validated['social_google_enabled']) ? '1' : '0', 'social_login_google');
+        Setting::setValue('social_google_client_id', $validated['social_google_client_id'] ?? '', 'social_login_google');
+        Setting::setValue('social_google_client_secret', $validated['social_google_client_secret'] ?? '', 'social_login_google');
+
+        Setting::setValue('social_apple_enabled', !empty($validated['social_apple_enabled']) ? '1' : '0', 'social_login_apple');
+        Setting::setValue('social_apple_client_id', $validated['social_apple_client_id'] ?? '', 'social_login_apple');
+        Setting::setValue('social_apple_client_secret', $validated['social_apple_client_secret'] ?? '', 'social_login_apple');
+
+        Setting::setValue('social_facebook_enabled', !empty($validated['social_facebook_enabled']) ? '1' : '0', 'social_login_facebook');
+        Setting::setValue('social_facebook_client_id', $validated['social_facebook_client_id'] ?? '', 'social_login_facebook');
+        Setting::setValue('social_facebook_client_secret', $validated['social_facebook_client_secret'] ?? '', 'social_login_facebook');
+
+        return back()->with('status', 'Social login settings saved');
+    }
+
+    public function updateGoogleCalendarSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'google_calendar_enabled' => ['nullable', 'boolean'],
+            'google_calendar_client_id' => ['nullable', 'string', 'max:255'],
+            'google_calendar_client_secret' => ['nullable', 'string', 'max:255'],
+            'google_calendar_sync_enabled' => ['nullable', 'boolean'],
+            'google_calendar_sync_interval_min' => ['nullable', 'integer', 'min:1', 'max:1440'],
+        ]);
+
+        Setting::setValue('google_calendar_enabled', !empty($validated['google_calendar_enabled']) ? '1' : '0', 'google_calendar');
+        Setting::setValue('google_calendar_client_id', $validated['google_calendar_client_id'] ?? '', 'google_calendar');
+        if (($validated['google_calendar_client_secret'] ?? '') !== '') {
+            Setting::setValue('google_calendar_client_secret', $validated['google_calendar_client_secret'], 'google_calendar');
+        }
+        Setting::setValue('google_calendar_sync_enabled', !empty($validated['google_calendar_sync_enabled']) ? '1' : '0', 'google_calendar');
+        Setting::setValue('google_calendar_sync_interval_min', (string) ((int) ($validated['google_calendar_sync_interval_min'] ?? 10)), 'google_calendar');
+
+        return back()->with('status', 'Google Calendar settings saved');
+    }
+
+    public function updateThemeSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'theme_direction' => ['required', 'string', Rule::in(['ltr', 'rtl'])],
+            'theme_mode' => ['required', 'string', Rule::in(['light', 'dark', 'system'])],
+            'theme_bg' => ['nullable', 'string', 'max:32'],
+        ]);
+
+        $bg = (string) ($validated['theme_bg'] ?? '');
+        if ($bg === '') {
+            $bg = '#f7f5f0';
+        }
+
+        Setting::setValue('theme_direction', $validated['theme_direction'], 'theme');
+        Setting::setValue('theme_mode', $validated['theme_mode'], 'theme');
+        Setting::setValue('theme_bg', $bg, 'theme');
+
+        return back()->with('status', 'Theme settings saved');
+    }
+
+    public function updateModuleSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'modules' => ['required', 'array'],
+        ]);
+
+        $modules = $validated['modules'] ?? [];
+        if (!is_array($modules)) {
+            $modules = [];
+        }
+
+        $known = $this->listModules();
+        $knownMap = array_fill_keys($known, true);
+
+        $next = [];
+        foreach ($modules as $name => $enabled) {
+            $name = (string) $name;
+            if ($name === '' || !isset($knownMap[$name])) {
+                continue;
+            }
+            $next[$name] = (bool) $enabled;
+        }
+
+        foreach ($known as $name) {
+            if (!array_key_exists($name, $next)) {
+                $next[$name] = true;
+            }
+        }
+
+        ksort($next);
+        $this->writeModuleStatuses($next);
+
+        return back()->with('status', 'Module settings saved');
+    }
+
+    public function updatePaymentSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'payment_provider' => ['required', 'string', Rule::in(['pesapal', 'selcom', 'zenopay'])],
+            'payment_webhook_secret' => ['nullable', 'string', 'max:255'],
+
+            'pesapal_environment' => ['nullable', 'string', Rule::in(['sandbox', 'live'])],
+            'pesapal_consumer_key' => ['nullable', 'string', 'max:255'],
+            'pesapal_consumer_secret' => ['nullable', 'string', 'max:255'],
+
+            'selcom_environment' => ['nullable', 'string', Rule::in(['sandbox', 'live'])],
+            'selcom_vendor_id' => ['nullable', 'string', 'max:255'],
+            'selcom_api_key' => ['nullable', 'string', 'max:255'],
+            'selcom_api_secret' => ['nullable', 'string', 'max:255'],
+
+            'zenopay_environment' => ['nullable', 'string', Rule::in(['sandbox', 'live'])],
+            'zenopay_account_id' => ['nullable', 'string', 'max:255'],
+            'zenopay_api_key' => ['nullable', 'string', 'max:255'],
+            'zenopay_api_secret' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Setting::setValue('payment_provider', $validated['payment_provider'], 'payment');
+        Setting::setValue('payment_webhook_secret', $validated['payment_webhook_secret'] ?? '', 'payment_webhook');
+
+        Setting::setValue('pesapal_environment', $validated['pesapal_environment'] ?? 'sandbox', 'payment_pesapal');
+        Setting::setValue('pesapal_consumer_key', $validated['pesapal_consumer_key'] ?? '', 'payment_pesapal');
+        Setting::setValue('pesapal_consumer_secret', $validated['pesapal_consumer_secret'] ?? '', 'payment_pesapal');
+
+        Setting::setValue('selcom_environment', $validated['selcom_environment'] ?? 'sandbox', 'payment_selcom');
+        Setting::setValue('selcom_vendor_id', $validated['selcom_vendor_id'] ?? '', 'payment_selcom');
+        Setting::setValue('selcom_api_key', $validated['selcom_api_key'] ?? '', 'payment_selcom');
+        Setting::setValue('selcom_api_secret', $validated['selcom_api_secret'] ?? '', 'payment_selcom');
+
+        Setting::setValue('zenopay_environment', $validated['zenopay_environment'] ?? 'sandbox', 'payment_zenopay');
+        Setting::setValue('zenopay_account_id', $validated['zenopay_account_id'] ?? '', 'payment_zenopay');
+        Setting::setValue('zenopay_api_key', $validated['zenopay_api_key'] ?? '', 'payment_zenopay');
+        Setting::setValue('zenopay_api_secret', $validated['zenopay_api_secret'] ?? '', 'payment_zenopay');
+
+        return back()->with('status', 'Payment settings saved');
     }
 
     public function updateProfileSettings(Request $request)

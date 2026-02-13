@@ -1,1 +1,0 @@
-import{j as e}from"./app-C9QWUuoF.js";import i from"./SettingsSectionShell-CebwU-n4.js";function r(){return e.jsx(i,{title:"Superadmin Role & Permission",description:"Manage roles and permissions for the Super Admin area.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{r as default};

@@ -192,6 +192,25 @@ function IconUsers(props) {
     );
 }
 
+function IconLock(props) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M8 11V8a4 4 0 118 0v3"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 11h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7a2 2 0 012-2z"
+            />
+        </svg>
+    );
+}
+
 function IconCard(props) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
@@ -375,6 +394,7 @@ export default function Sidebar({
     const [openAppointments, setOpenAppointments] = useState(false);
     const [openPortfolio, setOpenPortfolio] = useState(false);
     const [openUsers, setOpenUsers] = useState(false);
+    const [openUserManagement, setOpenUserManagement] = useState(false);
     const [openBilling, setOpenBilling] = useState(false);
     const [openCompanies, setOpenCompanies] = useState(false);
     const [openReports, setOpenReports] = useState(false);
@@ -411,7 +431,7 @@ export default function Sidebar({
                 setOpen: setOpenDashboard,
                 children: [
                     { label: 'Main Dashboard', href: route('dashboard') },
-                    { label: 'Analytics', href: '#' },
+                    { label: 'Analytics', href: route('admin.analytics') },
                     { label: 'System Health', href: '#' },
                 ],
             },
@@ -476,15 +496,17 @@ export default function Sidebar({
                 ],
             },
             {
-                key: 'users',
-                label: 'USERS',
-                icon: IconUsers,
-                open: openUsers,
-                setOpen: setOpenUsers,
+                key: 'user_management',
+                label: 'USER MANAGEMENT',
+                icon: IconLock,
+                open: openUserManagement,
+                setOpen: setOpenUserManagement,
                 children: [
-                    { label: 'All Users', href: '#' },
-                    { label: 'Roles', href: '#' },
-                    { label: 'Permissions', href: '#' },
+                    { label: 'Users', href: route('admin.user-management.users') },
+                    { label: 'Employees', href: route('admin.user-management.employees') },
+                    { label: 'Roles', href: route('admin.user-management.roles') },
+                    { label: 'Permissions', href: route('admin.user-management.permissions') },
+                    { label: 'Sessions & Logs', href: route('admin.user-management.sessions-logs') },
                 ],
             },
             {
@@ -600,6 +622,7 @@ export default function Sidebar({
         openAppointments,
         openPortfolio,
         openUsers,
+        openUserManagement,
         openBilling,
         openCompanies,
         openReports,

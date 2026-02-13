@@ -1,1 +1,0 @@
-import{j as e}from"./app-C9QWUuoF.js";import t from"./SettingsSectionShell-CebwU-n4.js";function o(){return e.jsx(t,{title:"Google Calendar Settings",description:"Configure Google Calendar integration credentials and sync behavior.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{o as default};

@@ -16,8 +16,10 @@ import ModuleSettings from './Sections/ModuleSettings';
 import PaymentCredentials from './Sections/PaymentCredentials';
 import RestApiSetting from './Sections/RestApiSetting';
 import SecuritySettings from './Sections/SecuritySettings';
+import SocialLoginSettings from './Sections/SocialLoginSettings';
 import StorageSettings from './Sections/StorageSettings';
 import SuperadminRolePermissions from './Sections/SuperadminRolePermissions';
+import ThemeSettings from './Sections/ThemeSettings';
 import UpdateApp from './Sections/UpdateApp';
 
 export default function Settings() {
@@ -25,9 +27,16 @@ export default function Settings() {
     const appSettings = page.props.appSettings || {};
     const uploadSettings = page.props.uploadSettings || {};
     const mapsSettings = page.props.mapsSettings || {};
+    const storageSettings = page.props.storageSettings || {};
+    const storageStats = page.props.storageStats || {};
     const notificationSettings = page.props.notificationSettings || {};
     const languageSettings = page.props.languageSettings || {};
     const currencySettings = page.props.currencySettings || {};
+    const paymentSettings = page.props.paymentSettings || {};
+    const socialLoginSettings = page.props.socialLoginSettings || {};
+    const googleCalendarSettings = page.props.googleCalendarSettings || {};
+    const themeSettings = page.props.themeSettings || {};
+    const moduleSettings = page.props.moduleSettings || {};
     const employeeProfile = page.props.employeeProfile || {};
     const [timezones, setTimezones] = useState([]);
     const [mimeDraft, setMimeDraft] = useState('');
@@ -135,6 +144,55 @@ export default function Settings() {
         currency_decimals: currencySettings.decimals ?? 2,
         currency_decimal_separator: currencySettings.decimal_separator || '.',
         currency_thousand_separator: currencySettings.thousand_separator || ',',
+
+        payment_provider: paymentSettings.provider || 'pesapal',
+        payment_webhook_secret: paymentSettings.webhook_secret || '',
+
+        pesapal_environment: paymentSettings.pesapal?.environment || 'sandbox',
+        pesapal_consumer_key: paymentSettings.pesapal?.consumer_key || '',
+        pesapal_consumer_secret: '',
+
+        selcom_environment: paymentSettings.selcom?.environment || 'sandbox',
+        selcom_vendor_id: paymentSettings.selcom?.vendor_id || '',
+        selcom_api_key: paymentSettings.selcom?.api_key || '',
+        selcom_api_secret: '',
+
+        zenopay_environment: paymentSettings.zenopay?.environment || 'sandbox',
+        zenopay_account_id: paymentSettings.zenopay?.account_id || '',
+        zenopay_api_key: paymentSettings.zenopay?.api_key || '',
+        zenopay_api_secret: '',
+
+        storage_default_disk: storageSettings.default_disk || 'public',
+        storage_quota_mb: storageSettings.quota_mb ?? 1024,
+        storage_retention_days: storageSettings.retention_days ?? 0,
+
+        social_provider: 'google',
+        social_google_enabled: !!socialLoginSettings.google?.enabled,
+        social_google_client_id: socialLoginSettings.google?.client_id || '',
+        social_google_client_secret: '',
+        social_apple_enabled: !!socialLoginSettings.apple?.enabled,
+        social_apple_client_id: socialLoginSettings.apple?.client_id || '',
+        social_apple_client_secret: '',
+        social_facebook_enabled: !!socialLoginSettings.facebook?.enabled,
+        social_facebook_client_id: socialLoginSettings.facebook?.client_id || '',
+        social_facebook_client_secret: '',
+
+        google_calendar_enabled: !!googleCalendarSettings.enabled,
+        google_calendar_client_id: googleCalendarSettings.client_id || '',
+        google_calendar_client_secret: '',
+        google_calendar_sync_enabled: googleCalendarSettings.sync_enabled ?? true,
+        google_calendar_sync_interval_min: googleCalendarSettings.sync_interval_min ?? 10,
+
+        theme_direction: themeSettings.direction || 'ltr',
+        theme_mode: themeSettings.mode || 'light',
+        theme_bg: themeSettings.bg || '#f7f5f0',
+
+        modules: Array.isArray(moduleSettings.modules)
+            ? moduleSettings.modules.reduce((acc, m) => {
+                  if (m?.name) acc[m.name] = !!m.enabled;
+                  return acc;
+              }, {})
+            : {},
     });
 
     const avatarForm = useForm({
@@ -274,6 +332,42 @@ export default function Settings() {
     const submitCurrencySettings = (e) => {
         e.preventDefault();
         post(route('admin.settings.currency.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitPaymentSettings = () => {
+        post(route('admin.settings.payment.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitStorageSettings = () => {
+        post(route('admin.settings.storage.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitSocialLoginSettings = () => {
+        post(route('admin.settings.social_login.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitGoogleCalendarSettings = () => {
+        post(route('admin.settings.google_calendar.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitThemeSettings = () => {
+        post(route('admin.settings.theme.update'), {
+            preserveScroll: true,
+        });
+    };
+
+    const submitModuleSettings = () => {
+        post(route('admin.settings.modules.update'), {
             preserveScroll: true,
         });
     };
@@ -1727,19 +1821,62 @@ export default function Settings() {
                         </div>
                     </div>
                 ) : active === 'payment_credentials' ? (
-                    <PaymentCredentials />
+                    <PaymentCredentials
+                        data={data}
+                        setData={setData}
+                        submit={submitPaymentSettings}
+                        processing={processing}
+                        errors={errors}
+                    />
                 ) : active === 'finance_settings' ? (
                     <FinanceSettings />
                 ) : active === 'superadmin_role_permissions' ? (
                     <SuperadminRolePermissions />
                 ) : active === 'storage_settings' ? (
-                    <StorageSettings />
+                    <StorageSettings
+                        stats={storageStats}
+                        data={data}
+                        setData={setData}
+                        submit={submitStorageSettings}
+                        processing={processing}
+                        errors={errors}
+                    />
+                ) : active === 'social_login_settings' ? (
+                    <SocialLoginSettings
+                        data={data}
+                        setData={setData}
+                        submit={submitSocialLoginSettings}
+                        processing={processing}
+                        errors={errors}
+                    />
                 ) : active === 'security_settings' ? (
                     <SecuritySettings />
                 ) : active === 'google_calendar_settings' ? (
-                    <GoogleCalendarSettings />
+                    <GoogleCalendarSettings
+                        data={data}
+                        setData={setData}
+                        submit={submitGoogleCalendarSettings}
+                        processing={processing}
+                        errors={errors}
+                        googleCalendarSettings={googleCalendarSettings}
+                    />
+                ) : active === 'theme_settings' ? (
+                    <ThemeSettings
+                        data={data}
+                        setData={setData}
+                        submit={submitThemeSettings}
+                        processing={processing}
+                        errors={errors}
+                    />
                 ) : active === 'module_settings' ? (
-                    <ModuleSettings />
+                    <ModuleSettings
+                        data={data}
+                        setData={setData}
+                        submit={submitModuleSettings}
+                        processing={processing}
+                        errors={errors}
+                        moduleSettings={moduleSettings}
+                    />
                 ) : active === 'rest_api_setting' ? (
                     <RestApiSetting />
                 ) : active === 'database_backup_settings' ? (

@@ -58,6 +58,21 @@ class HandleInertiaRequests extends Middleware
                 'roles' => $user ? $user->getRoleNames() : [],
                 'permissions' => $user ? $user->getAllPermissions()->pluck('name') : [],
             ],
+            'theme' => (function () {
+                try {
+                    return [
+                        'direction' => Setting::getValue('theme_direction', 'ltr'),
+                        'mode' => Setting::getValue('theme_mode', 'light'),
+                        'bg' => Setting::getValue('theme_bg', '#f7f5f0'),
+                    ];
+                } catch (\Throwable $e) {
+                    return [
+                        'direction' => 'ltr',
+                        'mode' => 'light',
+                        'bg' => '#f7f5f0',
+                    ];
+                }
+            })(),
             'i18n' => [
                 'locale' => $locale,
                 'available_languages' => $available,
