@@ -10,12 +10,4 @@ export default defineConfig({
         }),
         react(),
     ],
-    server: {
-        host: true,
-        port: 5173,
-        strictPort: true,
-        hmr: {
-            host: process.env.VITE_DEV_SERVER_HOST || undefined,
-        },
-    },
 });
