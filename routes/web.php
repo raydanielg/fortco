@@ -8,7 +8,23 @@ use App\Http\Controllers\Admin\RestApiInventoryController;
 use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Admin\SecurityController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\ConstructionProjectsController;
+use App\Http\Controllers\Admin\ConstructionPagesController;
+use App\Http\Controllers\Admin\ConstructionMaterialsController;
 use App\Http\Controllers\Admin\UserManagementPagesController;
+use App\Http\Controllers\Admin\PortfolioProjectsController;
+use App\Http\Controllers\Admin\ConstructionWorkersController;
+use App\Http\Controllers\Admin\CompaniesPagesController;
+use App\Http\Controllers\Admin\CompanyVendorsController;
+use App\Http\Controllers\Admin\CompanyPartnersController;
+use App\Http\Controllers\Admin\CompanyCompaniesController;
+use App\Http\Controllers\Admin\RealEstatePagesController;
+use App\Http\Controllers\Admin\RealEstatePropertiesController;
+use App\Http\Controllers\Admin\RealEstateBookingsController;
+use App\Http\Controllers\Admin\RealEstateClientsController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\PropertiesPageController;
+use App\Http\Controllers\RealEstatePropertyBookingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -100,19 +116,10 @@ Route::get('/api/timezones', function () {
     return response()->json($timezones);
 })->name('api.timezones');
 
-Route::get('/properties', function () {
-    return Inertia::render('Properties', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('properties.index');
+Route::get('/properties', [PropertiesPageController::class, 'index'])->name('properties.index');
+Route::post('/properties/book', [RealEstatePropertyBookingsController::class, 'store'])->name('properties.book');
 
-Route::get('/portfolio', function () {
-    return Inertia::render('Portfolio/Index', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-})->name('portfolio.page');
+Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.page');
 
 Route::get('/gallery', function () {
     return Inertia::render('Gallery/Index', [
@@ -141,7 +148,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -154,6 +161,101 @@ Route::middleware('auth')->group(function () {
 
         Route::get('system-health', [DashboardController::class, 'systemHealth'])->name('admin.system-health');
         Route::get('system-health/data', [DashboardController::class, 'systemHealthData'])->name('admin.system-health.data');
+
+        Route::prefix('construction')->group(function () {
+            Route::get('projects', [ConstructionPagesController::class, 'projects'])->name('admin.construction.projects');
+            Route::get('projects/create', [ConstructionPagesController::class, 'createProject'])->name('admin.construction.projects.create');
+            Route::get('project-categories', [ConstructionPagesController::class, 'projectCategories'])->name('admin.construction.project-categories');
+            Route::get('locations', [ConstructionPagesController::class, 'locations'])->name('admin.construction.locations');
+            Route::get('materials', [ConstructionPagesController::class, 'materials'])->name('admin.construction.materials');
+            Route::get('workers', [ConstructionPagesController::class, 'workers'])->name('admin.construction.workers');
+
+            Route::get('projects/data', [ConstructionProjectsController::class, 'data'])->name('admin.construction.projects.data');
+            Route::post('projects', [ConstructionProjectsController::class, 'store'])->name('admin.construction.projects.store');
+            Route::get('projects/export', [ConstructionProjectsController::class, 'export'])->name('admin.construction.projects.export');
+            Route::delete('projects/{project}', [ConstructionProjectsController::class, 'destroy'])->name('admin.construction.projects.destroy');
+            Route::delete('projects/bulk', [ConstructionProjectsController::class, 'bulkDestroy'])->name('admin.construction.projects.bulk-destroy');
+
+            Route::get('project-categories/data', [ConstructionProjectsController::class, 'categories'])->name('admin.construction.project-categories.data');
+            Route::post('project-categories', [ConstructionProjectsController::class, 'storeCategory'])->name('admin.construction.project-categories.store');
+            Route::delete('project-categories/{category}', [ConstructionProjectsController::class, 'destroyCategory'])->name('admin.construction.project-categories.destroy');
+            Route::put('project-categories/{category}', [ConstructionProjectsController::class, 'updateCategory'])->name('admin.construction.project-categories.update');
+            Route::get('locations/data', [ConstructionProjectsController::class, 'locations'])->name('admin.construction.locations.data');
+            Route::post('locations', [ConstructionProjectsController::class, 'storeLocation'])->name('admin.construction.locations.store');
+            Route::post('locations/auto-create', [ConstructionProjectsController::class, 'autoCreateLocations'])->name('admin.construction.locations.auto-create');
+            Route::put('locations/{location}', [ConstructionProjectsController::class, 'updateLocation'])->name('admin.construction.locations.update');
+            Route::delete('locations/{location}', [ConstructionProjectsController::class, 'destroyLocation'])->name('admin.construction.locations.destroy');
+
+            Route::get('materials/data', [ConstructionMaterialsController::class, 'data'])->name('admin.construction.materials.data');
+            Route::post('materials', [ConstructionMaterialsController::class, 'store'])->name('admin.construction.materials.store');
+            Route::put('materials/{material}', [ConstructionMaterialsController::class, 'update'])->name('admin.construction.materials.update');
+            Route::delete('materials/{material}', [ConstructionMaterialsController::class, 'destroy'])->name('admin.construction.materials.destroy');
+
+            Route::get('workers/groups', [ConstructionWorkersController::class, 'groups'])->name('admin.construction.workers.groups');
+            Route::post('workers/groups', [ConstructionWorkersController::class, 'storeGroup'])->name('admin.construction.workers.groups.store');
+            Route::put('workers/groups/{group}', [ConstructionWorkersController::class, 'updateGroup'])->name('admin.construction.workers.groups.update');
+            Route::delete('workers/groups/{group}', [ConstructionWorkersController::class, 'destroyGroup'])->name('admin.construction.workers.groups.destroy');
+            Route::get('workers/groups/{group}', [ConstructionWorkersController::class, 'groupDetails'])->name('admin.construction.workers.groups.show');
+
+            Route::post('workers', [ConstructionWorkersController::class, 'storeWorker'])->name('admin.construction.workers.store');
+            Route::put('workers/{worker}', [ConstructionWorkersController::class, 'updateWorker'])->name('admin.construction.workers.update');
+            Route::delete('workers/{worker}', [ConstructionWorkersController::class, 'destroyWorker'])->name('admin.construction.workers.destroy');
+            Route::put('worker-documents/{document}', [ConstructionWorkersController::class, 'updateDocument'])->name('admin.construction.workers.documents.update');
+
+            Route::get('workers/projects', [ConstructionWorkersController::class, 'projects'])->name('admin.construction.workers.projects');
+            Route::post('workers/groups/{group}/assign', [ConstructionWorkersController::class, 'assignGroupToProject'])->name('admin.construction.workers.groups.assign');
+            Route::post('workers/groups/{group}/unassign', [ConstructionWorkersController::class, 'unassignGroupFromProject'])->name('admin.construction.workers.groups.unassign');
+        });
+
+        Route::prefix('real-estate')->group(function () {
+            Route::get('properties', [RealEstatePagesController::class, 'properties'])->name('admin.real-estate.properties');
+            Route::get('bookings', [RealEstatePagesController::class, 'bookings'])->name('admin.real-estate.bookings');
+            Route::get('clients', [RealEstatePagesController::class, 'clients'])->name('admin.real-estate.clients');
+
+            Route::get('clients/data', [RealEstateClientsController::class, 'data'])->name('admin.real-estate.clients.data');
+            Route::get('clients/{client}', [RealEstateClientsController::class, 'show'])->name('admin.real-estate.clients.show');
+
+            Route::get('bookings/data', [RealEstateBookingsController::class, 'data'])->name('admin.real-estate.bookings.data');
+            Route::get('bookings/{booking}', [RealEstateBookingsController::class, 'show'])->name('admin.real-estate.bookings.show');
+            Route::get('bookings/{booking}/invoice', [RealEstateBookingsController::class, 'invoice'])->name('admin.real-estate.bookings.invoice');
+            Route::delete('bookings/{booking}', [RealEstateBookingsController::class, 'destroy'])->name('admin.real-estate.bookings.destroy');
+            Route::put('bookings/{booking}/status', [RealEstateBookingsController::class, 'updateStatus'])->name('admin.real-estate.bookings.status');
+
+            Route::get('properties/data', [RealEstatePropertiesController::class, 'data'])->name('admin.real-estate.properties.data');
+            Route::post('properties', [RealEstatePropertiesController::class, 'store'])->name('admin.real-estate.properties.store');
+            Route::delete('properties/{property}', [RealEstatePropertiesController::class, 'destroy'])->name('admin.real-estate.properties.destroy');
+
+            Route::get('property-categories/data', [RealEstatePropertiesController::class, 'categories'])->name('admin.real-estate.property-categories.data');
+            Route::post('property-categories', [RealEstatePropertiesController::class, 'storeCategory'])->name('admin.real-estate.property-categories.store');
+            Route::delete('property-categories/{category}', [RealEstatePropertiesController::class, 'destroyCategory'])->name('admin.real-estate.property-categories.destroy');
+        });
+
+        Route::prefix('companies')->group(function () {
+            Route::get('profile', [CompaniesPagesController::class, 'profile'])->name('admin.companies.profile');
+            Route::get('partners', [CompaniesPagesController::class, 'partners'])->name('admin.companies.partners');
+            Route::get('vendors', [CompaniesPagesController::class, 'vendors'])->name('admin.companies.vendors');
+
+            Route::get('companies/data', [CompanyCompaniesController::class, 'data'])->name('admin.companies.companies.data');
+
+            Route::get('partners/data', [CompanyPartnersController::class, 'data'])->name('admin.companies.partners.data');
+            Route::post('partners', [CompanyPartnersController::class, 'store'])->name('admin.companies.partners.store');
+            Route::delete('partners/{partner}', [CompanyPartnersController::class, 'destroy'])->name('admin.companies.partners.destroy');
+
+            Route::get('vendors/data', [CompanyVendorsController::class, 'data'])->name('admin.companies.vendors.data');
+            Route::post('vendors', [CompanyVendorsController::class, 'store'])->name('admin.companies.vendors.store');
+            Route::delete('vendors/{vendor}', [CompanyVendorsController::class, 'destroy'])->name('admin.companies.vendors.destroy');
+            Route::get('vendors/{vendor}/download', [CompanyVendorsController::class, 'download'])->name('admin.companies.vendors.download');
+            Route::get('vendors/{vendor}/preview', [CompanyVendorsController::class, 'preview'])->name('admin.companies.vendors.preview');
+            Route::put('vendors/{vendor}/status', [CompanyVendorsController::class, 'updateStatus'])->name('admin.companies.vendors.status');
+        });
+
+        Route::prefix('portfolio')->group(function () {
+            Route::get('projects', [PortfolioProjectsController::class, 'index'])->name('admin.portfolio-projects');
+            Route::get('projects/data', [PortfolioProjectsController::class, 'data'])->name('admin.portfolio-projects.data');
+            Route::post('projects', [PortfolioProjectsController::class, 'store'])->name('admin.portfolio-projects.store');
+            Route::get('projects/export', [PortfolioProjectsController::class, 'export'])->name('admin.portfolio-projects.export');
+            Route::delete('projects/bulk', [PortfolioProjectsController::class, 'bulkDestroy'])->name('admin.portfolio-projects.bulk-destroy');
+        });
 
         Route::prefix('user-management')->group(function () {
             Route::get('users', [UserManagementPagesController::class, 'users'])->name('admin.user-management.users');

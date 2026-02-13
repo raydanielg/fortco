@@ -14,8 +14,8 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 
-export default function FeaturedProjects() {
-    const projects = useMemo(
+export default function FeaturedProjects({ projects: projectsProp = [] }) {
+    const fallback = useMemo(
         () => [
             {
                 id: 'edmark-estate',
@@ -146,6 +146,8 @@ export default function FeaturedProjects() {
         ],
         []
     );
+
+    const projects = Array.isArray(projectsProp) && projectsProp.length ? projectsProp : fallback;
 
     const [selected, setSelected] = useState(null);
 

@@ -2,6 +2,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout';
 import { Head } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { FiDatabase, FiZap, FiLayers, FiUsers } from 'react-icons/fi';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -31,9 +32,48 @@ function HealthCard({ title, ok, ms, message }) {
     return (
         <div className="h-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-3">
-                <div>
-                    <div className="text-[12px] font-semibold text-slate-900">{title}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">{message || ''}</div>
+                <div className="flex items-start gap-3">
+                    <div
+                        className={`mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full border ${
+                            ok
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                : 'border-rose-200 bg-rose-50 text-rose-700'
+                        }`}
+                    >
+                        <span className="text-[14px]">●</span>
+                    </div>
+                    <div>
+                        <div className="text-[12px] font-semibold text-slate-900">{title}</div>
+                        <div className="mt-1 text-[11px] text-slate-500">{message || ''}</div>
+                    </div>
+                </div>
+                <div className="text-right">
+                    <StatusPill ok={ok} text={ok ? 'Healthy' : 'Fail'} />
+                    <div className="mt-2 text-[11px] text-slate-500">{ms !== null ? `${ms}ms` : ''}</div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function HealthCardWithIcon({ title, icon: Icon, ok, ms, message }) {
+    return (
+        <div className="h-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                    <div
+                        className={`mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full border ${
+                            ok
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                : 'border-rose-200 bg-rose-50 text-rose-700'
+                        }`}
+                    >
+                        <Icon className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <div className="text-[12px] font-semibold text-slate-900">{title}</div>
+                        <div className="mt-1 text-[11px] text-slate-500">{message || ''}</div>
+                    </div>
                 </div>
                 <div className="text-right">
                     <StatusPill ok={ok} text={ok ? 'Healthy' : 'Fail'} />
@@ -157,26 +197,30 @@ export default function Index() {
                 </div>
 
                 <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <HealthCard
+                    <HealthCardWithIcon
                         title="Database"
+                        icon={FiDatabase}
                         ok={!!checks.db?.ok}
                         ms={checks.db?.ms ?? null}
                         message={checks.db?.message || ''}
                     />
-                    <HealthCard
+                    <HealthCardWithIcon
                         title="Cache"
+                        icon={FiZap}
                         ok={!!checks.cache?.ok}
                         ms={checks.cache?.ms ?? null}
                         message={checks.cache?.message || ''}
                     />
-                    <HealthCard
+                    <HealthCardWithIcon
                         title="Queue"
+                        icon={FiLayers}
                         ok={!!checks.queue?.ok}
                         ms={null}
                         message={checks.queue?.message || `Driver: ${queue.driver || '-'}`}
                     />
-                    <HealthCard
+                    <HealthCardWithIcon
                         title="Sessions"
+                        icon={FiUsers}
                         ok={!!checks.sessions?.ok}
                         ms={null}
                         message={checks.sessions?.message || `Driver: ${sessions.driver || '-'}`}

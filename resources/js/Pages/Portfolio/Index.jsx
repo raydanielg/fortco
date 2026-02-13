@@ -18,7 +18,7 @@ import Awards from './sections/Awards';
 import PortfolioTestimonials from './sections/PortfolioTestimonials';
 import PortfolioContact from './sections/PortfolioContact';
 
-export default function Index({ canLogin, canRegister }) {
+export default function Index({ canLogin, canRegister, featuredProjects = [], ongoingProjects = [] }) {
     return (
         <>
             <Head title="Portfolio" />
@@ -32,8 +32,8 @@ export default function Index({ canLogin, canRegister }) {
                         <Container>
                             <div className="grid gap-10">
                                 <PortfolioOverview />
-                                <FeaturedProjects />
-                                <OngoingProjects />
+                                <FeaturedProjects projects={featuredProjects} />
+                                <OngoingProjects projects={ongoingProjects} />
                                 <ProjectCategories />
                                 <CSR />
                                 <GalleryIndex />

@@ -1,5 +1,26 @@
 import { Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import AnimatedIcon from '@/Components/AnimatedIcon';
+import activity from 'react-useanimations/lib/activity';
+import alertCircle from 'react-useanimations/lib/alertCircle';
+
+function AnimatedMenuIcon({ animation, className = '' }) {
+    return (
+        <AnimatedIcon
+            animation={animation}
+            size={20}
+            strokeColor="currentColor"
+            fillColor=""
+            className={className}
+        />
+    );
+}
+
+function makeMenuIcon(animation) {
+    return function MenuIcon(props) {
+        return <AnimatedMenuIcon animation={animation} {...props} />;
+    };
+}
 
 function IconGrid(props) {
     return (
@@ -426,38 +447,26 @@ export default function Sidebar({
             {
                 key: 'dashboard',
                 label: 'DASHBOARD',
-                icon: IconChart,
+                icon: makeMenuIcon(activity),
                 open: openDashboard,
                 setOpen: setOpenDashboard,
                 children: [
                     { label: 'Main Dashboard', href: route('dashboard') },
-                    { label: 'Analytics', href: route('admin.analytics') },
-                    { label: 'System Health', href: route('admin.system-health') },
+                    { label: 'Analytics', href: route('admin.analytics'), icon: makeMenuIcon(activity) },
+                    { label: 'System Health', href: route('admin.system-health'), icon: makeMenuIcon(alertCircle) },
                 ],
             },
             {
                 key: 'construction',
                 label: 'CONSTRUCTION',
                 icon: IconHammer,
-                open: openConstruction,
-                setOpen: setOpenConstruction,
-                children: [
-                    { label: 'Projects', href: '#' },
-                    { label: 'Materials', href: '#' },
-                    { label: 'Workers', href: '#' },
-                ],
+                href: route('admin.construction.projects'),
             },
             {
                 key: 'real_estate',
                 label: 'REAL ESTATE',
                 icon: IconHome,
-                open: openRealEstate,
-                setOpen: setOpenRealEstate,
-                children: [
-                    { label: 'Properties', href: '#' },
-                    { label: 'Bookings', href: '#' },
-                    { label: 'Clients', href: '#' },
-                ],
+                href: route('admin.real-estate.properties'),
             },
             {
                 key: 'loans',
@@ -490,6 +499,7 @@ export default function Sidebar({
                 open: openPortfolio,
                 setOpen: setOpenPortfolio,
                 children: [
+                    { label: 'Projects', href: route('admin.portfolio-projects') },
                     { label: 'Gallery', href: '#' },
                     { label: 'Testimonials', href: '#' },
                     { label: 'Awards', href: '#' },
@@ -525,13 +535,7 @@ export default function Sidebar({
                 key: 'companies',
                 label: 'COMPANIES',
                 icon: IconBuilding,
-                open: openCompanies,
-                setOpen: setOpenCompanies,
-                children: [
-                    { label: 'Profile', href: '#' },
-                    { label: 'Partners', href: '#' },
-                    { label: 'Vendors', href: '#' },
-                ],
+                href: route('admin.companies.profile'),
             },
             {
                 key: 'reports',
@@ -666,7 +670,16 @@ export default function Sidebar({
                         className="group relative flex w-full items-center rounded-lg p-2 pl-6 text-sm font-medium text-gray-700 hover:bg-gray-100"
                         onClick={onClose}
                     >
-                        <span className="absolute left-[-9px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border border-gray-300 bg-white group-hover:border-gray-400" />
+                        {item.icon ? (
+                            <span className="absolute left-[-11px] top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-gray-900">
+                                {(() => {
+                                    const ItemIcon = item.icon;
+                                    return <ItemIcon className="h-4 w-4" />;
+                                })()}
+                            </span>
+                        ) : (
+                            <span className="absolute left-[-9px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border border-gray-300 bg-white group-hover:border-gray-400" />
+                        )}
                         {item.label}
                     </Link>
                 </li>

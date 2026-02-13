@@ -24,133 +24,31 @@ import Header from './Home/sections/Header';
 import Footer from './Home/sections/Footer';
 import Container from './Home/components/Container';
 
-export default function Properties({ canLogin, canRegister }) {
+export default function Properties({ canLogin, canRegister, properties: serverProperties = [] }) {
     const [query, setQuery] = useState('');
     const [type, setType] = useState('All');
     const [selected, setSelected] = useState(null);
+
+    const [bookingOpen, setBookingOpen] = useState(false);
+    const [bookingProperty, setBookingProperty] = useState(null);
+    const [bookingFullName, setBookingFullName] = useState('');
+    const [bookingPhone, setBookingPhone] = useState('');
+    const [bookingEmail, setBookingEmail] = useState('');
+    const [bookingBusy, setBookingBusy] = useState(false);
+    const [bookingError, setBookingError] = useState('');
+    const [bookingSuccess, setBookingSuccess] = useState('');
 
     const contactPhone = '+255 700 000 000';
     const contactPhoneDigits = '255700000000';
 
     const propertyTypes = useMemo(() => ['All', 'House', 'Apartment', 'Plot/Land', 'Commercial', 'Rental'], []);
 
-    const properties = useMemo(
-        () => [
-            {
-                id: 1,
-                title: 'Modern Family House in Mikocheni',
-                type: 'House',
-                status: 'For Sale',
-                location: 'Dar es Salaam',
-                price: 'TZS 480,000,000',
-                beds: 4,
-                baths: 3,
-                size: '320 m²',
-                image: '/slides/building-new-concrete-houses_1398-3932.jpg',
-                featured: true,
-                desc: 'Spacious modern family home with bright living areas, secure parking, and a quiet neighborhood close to key amenities.'
-            },
-            {
-                id: 2,
-                title: 'Serviced Apartment near City Center',
-                type: 'Apartment',
-                status: 'For Rent',
-                location: 'Dar es Salaam',
-                price: 'TZS 2,500,000 / month',
-                beds: 2,
-                baths: 2,
-                size: '110 m²',
-                image: '/slides/beautiful-view-construction-site-city-sunset_181624-9347.jpg',
-                featured: false,
-                desc: 'Fully serviced apartment with reliable utilities, modern finishes, and quick access to business and shopping areas.'
-            },
-            {
-                id: 3,
-                title: 'Prime Plot for Development',
-                type: 'Plot/Land',
-                status: 'For Sale',
-                location: 'Dodoma',
-                price: 'TZS 85,000,000',
-                beds: null,
-                baths: null,
-                size: '900 m²',
-                image: '/slides/beautiful-view-construction-site-city-building_653669-11417.jpg',
-                featured: false,
-                desc: 'Well-positioned plot suitable for residential or mixed-use development, with good road access and growth potential.'
-            },
-            {
-                id: 4,
-                title: 'Warehouse & Office Space',
-                type: 'Commercial',
-                status: 'For Lease',
-                location: 'Mwanza',
-                price: 'TZS 6,000,000 / month',
-                beds: null,
-                baths: 2,
-                size: '520 m²',
-                image: '/slides/warehouse-smiling-colleagues-scanning-cardboard-box-barcode-chatting_482257-77667.jpg',
-                featured: true,
-                desc: 'Flexible warehouse space with office suites, ideal for distribution teams and growing businesses needing reliable access.'
-            },
-            {
-                id: 5,
-                title: 'Newly Built Townhouse',
-                type: 'Rental',
-                status: 'For Rent',
-                location: 'Arusha',
-                price: 'TZS 1,800,000 / month',
-                beds: 3,
-                baths: 2,
-                size: '180 m²',
-                image: '/slides/close-up-hard-hat-holding-by-construction-worker_329181-2825.jpg',
-                featured: false,
-                desc: 'New townhouse with modern kitchen, private yard, and secure neighborhood — ideal for professionals and families.'
-            },
-            {
-                id: 6,
-                title: 'Luxury Apartment with Balcony Views',
-                type: 'Apartment',
-                status: 'For Sale',
-                location: 'Dar es Salaam',
-                price: 'TZS 350,000,000',
-                beds: 3,
-                baths: 2,
-                size: '165 m²',
-                image: '/slides/young-black-race-man-with-blueprint-stading-near-glass-building_1157-50906.jpg',
-                featured: false,
-                desc: 'Premium apartment with balcony views, high-quality finishes, and easy access to main roads and city conveniences.'
-            },
-            {
-                id: 7,
-                title: 'Commercial Plot on Main Road',
-                type: 'Plot/Land',
-                status: 'For Sale',
-                location: 'Morogoro',
-                price: 'TZS 120,000,000',
-                beds: null,
-                baths: null,
-                size: '1,200 m²',
-                image: '/slides/construction-works-frankfurt-downtown-germany_1268-20907.jpg',
-                featured: false,
-                desc: 'Main-road frontage plot ideal for commercial development with strong visibility and long-term value.'
-            },
-            {
-                id: 8,
-                title: 'Office Suites for Growing Teams',
-                type: 'Commercial',
-                status: 'For Lease',
-                location: 'Dar es Salaam',
-                price: 'TZS 3,200,000 / month',
-                beds: null,
-                baths: 1,
-                size: '140 m²',
-                image: '/slides/professional-engineer-team-working-engineering-worker-safety-hardhat-architect-looking_38052-4318.jpg',
-                featured: false,
-                desc: 'Professional office suites with meeting space options, strong connectivity, and a clean environment for client visits.'
-            },
-        ],
-        []
-    );
+    const properties = useMemo(() => {
+        return (Array.isArray(serverProperties) ? serverProperties : []).map((p) => ({
+            ...p,
+            desc: p?.description ?? p?.desc ?? '',
+        }));
+    }, [serverProperties]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -165,6 +63,72 @@ export default function Properties({ canLogin, canRegister }) {
 
     const openDetails = (property) => setSelected(property);
     const closeDetails = () => setSelected(null);
+
+    const csrf = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    const readJson = async (r) => {
+        const text = await r.text();
+        try {
+            return text ? JSON.parse(text) : {};
+        } catch (e) {
+            return {};
+        }
+    };
+
+    const openBooking = (property) => {
+        setBookingProperty(property || null);
+        setBookingError('');
+        setBookingSuccess('');
+        setBookingOpen(true);
+    };
+
+    const closeBooking = () => {
+        if (bookingBusy) return;
+        setBookingOpen(false);
+    };
+
+    const submitBooking = () => {
+        if (!bookingFullName.trim()) {
+            setBookingError('Full name is required');
+            return;
+        }
+        if (!bookingPhone.trim()) {
+            setBookingError('Phone number is required');
+            return;
+        }
+
+        setBookingBusy(true);
+        setBookingError('');
+        setBookingSuccess('');
+
+        fetch(route('properties.book'), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf(),
+            },
+            body: JSON.stringify({
+                property_id: bookingProperty?.id ?? null,
+                property_title: bookingProperty?.title ?? null,
+                full_name: bookingFullName.trim(),
+                phone_number: bookingPhone.trim(),
+                email: bookingEmail.trim() || null,
+            }),
+        })
+            .then(async (r) => {
+                const json = await readJson(r);
+                if (!r.ok) throw new Error(json?.message || 'Failed to send booking request');
+                setBookingSuccess(json?.message || "Successfully received. We'll be back in short in contact.");
+                setBookingFullName('');
+                setBookingPhone('');
+                setBookingEmail('');
+            })
+            .catch((e) => setBookingError(e?.message || 'Failed to send booking request'))
+            .finally(() => setBookingBusy(false));
+    };
 
     return (
         <>
@@ -408,12 +372,13 @@ export default function Properties({ canLogin, canRegister }) {
                                             </div>
 
                                             <div className="mt-6 flex items-center gap-3">
-                                                <a
-                                                    href="#contact"
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openBooking(p)}
                                                     className="inline-flex flex-1 items-center justify-center rounded-2xl bg-black px-4 py-2.5 text-sm font-extrabold tracking-wide text-white shadow-sm transition-all hover:bg-slate-900"
                                                 >
-                                                    Book viewing
-                                                </a>
+                                                    Book
+                                                </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDetails(p)}
@@ -592,6 +557,185 @@ export default function Properties({ canLogin, canRegister }) {
                                                 </div>
                                             </>
                                         ) : null}
+                                    </Dialog.Panel>
+                                </Transition.Child>
+                            </div>
+                        </div>
+                    </Dialog>
+                </Transition>
+
+                <Transition show={bookingOpen} as="div">
+                    <Dialog as="div" className="relative z-50" onClose={closeBooking}>
+                        <Transition.Child
+                            as="div"
+                            enter="ease-out duration-200"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-in duration-150"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                            className="fixed inset-0 bg-black/60"
+                        />
+
+                        <div className="fixed inset-0 overflow-y-auto">
+                            <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
+                                <Transition.Child
+                                    as="div"
+                                    enter="ease-out duration-200"
+                                    enterFrom="opacity-0 translate-y-4 sm:translate-y-2 sm:scale-95"
+                                    enterTo="opacity-100 translate-y-0 sm:scale-100"
+                                    leave="ease-in duration-150"
+                                    leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                                    leaveTo="opacity-0 translate-y-4 sm:translate-y-2 sm:scale-95"
+                                    className="w-full max-w-xl"
+                                >
+                                    <Dialog.Panel className="overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-black/5">
+                                        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <Dialog.Title className="text-lg font-black tracking-tight text-slate-900">Book a viewing</Dialog.Title>
+                                                    <p className="mt-1 text-sm font-semibold text-slate-600">
+                                                        {bookingProperty?.title ? bookingProperty.title : 'Select a property and send your request.'}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={closeBooking}
+                                                    disabled={bookingBusy}
+                                                    className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                                >
+                                                    <XMarkIcon className="h-6 w-6" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6">
+                                            {bookingError ? (
+                                                <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+                                                    {bookingError}
+                                                </div>
+                                            ) : null}
+
+                                            {bookingSuccess ? (
+                                                <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                                                    {bookingSuccess}
+                                                </div>
+                                            ) : null}
+
+                                            <div className="mb-5 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                                                <div className="text-xs font-extrabold uppercase tracking-widest text-slate-500">Selected property</div>
+                                                {bookingProperty ? (
+                                                    <div className="mt-3 flex gap-4">
+                                                        <div className="h-20 w-28 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                                                            {bookingProperty?.image ? (
+                                                                <img
+                                                                    src={bookingProperty.image}
+                                                                    alt=""
+                                                                    className="h-full w-full object-cover"
+                                                                    loading="lazy"
+                                                                />
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-base font-black tracking-tight text-slate-900 line-clamp-1">
+                                                                {bookingProperty.title}
+                                                            </div>
+                                                            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold text-slate-600">
+                                                                <span className="inline-flex items-center gap-1.5">
+                                                                    <MapPinIcon className="h-4 w-4" />
+                                                                    <span className="line-clamp-1">{bookingProperty.location || '—'}</span>
+                                                                </span>
+                                                                <span className="text-slate-300">|</span>
+                                                                <span className="font-extrabold text-slate-900">{bookingProperty.price || '—'}</span>
+                                                            </div>
+                                                            <div className="mt-2 text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                                                                {bookingProperty.type} · {bookingProperty.status}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-600">
+                                                        No property selected. Choose a property below.
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="grid gap-4">
+                                                <div>
+                                                    <label className="text-sm font-extrabold text-slate-700">
+                                                        Full name <span className="text-rose-600">*</span>
+                                                    </label>
+                                                    <input
+                                                        value={bookingFullName}
+                                                        onChange={(e) => setBookingFullName(e.target.value)}
+                                                        className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-primary-300 focus:ring-2 focus:ring-primary-200"
+                                                        placeholder="Enter your full name"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-extrabold text-slate-700">
+                                                        Phone number <span className="text-rose-600">*</span>
+                                                    </label>
+                                                    <input
+                                                        value={bookingPhone}
+                                                        onChange={(e) => setBookingPhone(e.target.value)}
+                                                        className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-primary-300 focus:ring-2 focus:ring-primary-200"
+                                                        placeholder="e.g. +255 7xx xxx xxx"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-extrabold text-slate-700">Email</label>
+                                                    <input
+                                                        value={bookingEmail}
+                                                        onChange={(e) => setBookingEmail(e.target.value)}
+                                                        className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-primary-300 focus:ring-2 focus:ring-primary-200"
+                                                        placeholder="e.g. name@example.com"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-extrabold text-slate-700">Property to book</label>
+                                                    <select
+                                                        value={bookingProperty?.id ?? ''}
+                                                        onChange={(e) => {
+                                                            const id = e.target.value ? Number(e.target.value) : null;
+                                                            const prop = id ? properties.find((x) => x.id === id) : null;
+                                                            setBookingProperty(prop || null);
+                                                        }}
+                                                        className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 focus:border-primary-300 focus:ring-2 focus:ring-primary-200"
+                                                    >
+                                                        <option value="">Select property</option>
+                                                        {properties.map((p) => (
+                                                            <option key={p.id} value={p.id}>
+                                                                {p.title}{p.location ? ` - ${p.location}` : ''}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="mt-2 text-xs font-semibold text-slate-500">You can change to another property anytime.</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={closeBooking}
+                                                    disabled={bookingBusy}
+                                                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold tracking-wide text-slate-900 shadow-sm transition-all hover:bg-slate-50 disabled:opacity-60"
+                                                >
+                                                    Close
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={submitBooking}
+                                                    disabled={bookingBusy}
+                                                    className="rounded-2xl bg-black px-5 py-3 text-sm font-extrabold tracking-wide text-white shadow-sm transition-all hover:bg-slate-900 disabled:opacity-60"
+                                                >
+                                                    {bookingBusy ? 'Sending...' : 'Send request'}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>

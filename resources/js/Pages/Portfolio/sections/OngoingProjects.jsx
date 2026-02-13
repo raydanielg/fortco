@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { BuildingOffice2Icon, CalendarDaysIcon, ChartBarIcon, MapPinIcon } from '@heroicons/react/24/outline';
 
-export default function OngoingProjects() {
-    const projects = useMemo(
+export default function OngoingProjects({ projects: projectsProp = [] }) {
+    const fallback = useMemo(
         () => [
             {
                 name: 'Fortco Lakeview Estate',
@@ -39,6 +39,8 @@ export default function OngoingProjects() {
         ],
         []
     );
+
+    const projects = Array.isArray(projectsProp) && projectsProp.length ? projectsProp : fallback;
 
     return (
         <section id="ongoing-projects" className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
