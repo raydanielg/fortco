@@ -1,6 +1,6 @@
-import DashboardLayout from '@/Layouts/DashboardLayout';
 import { Head } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
+import AdminPanelLayout from '@/Layouts/AdminPanelLayout';
 
 export default function Projects() {
     const [busy, setBusy] = useState(false);
@@ -202,9 +202,21 @@ export default function Projects() {
         { value: '0', label: 'Hidden' },
     ];
 
+    const items = useMemo(
+        () => [
+            { key: 'projects', label: 'Projects', href: route('admin.portfolio-projects') },
+            { key: 'gallery', label: 'Gallery', href: route('admin.portfolio.gallery') },
+            { key: 'testimonials', label: 'Testimonials', href: route('admin.portfolio.testimonials') },
+            { key: 'awards', label: 'Awards', href: route('admin.portfolio.awards') },
+        ],
+        []
+    );
+
     return (
-        <DashboardLayout title="Portfolio Projects" breadcrumbs={['Home', 'Portfolio', 'Projects']}>
+        <>
             <Head title="Portfolio Projects" />
+
+            <AdminPanelLayout title="Portfolio" active="projects" items={items}>
 
             <div className="grid gap-6">
                 <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -581,6 +593,7 @@ export default function Projects() {
                     </div>
                 ) : null}
             </div>
-        </DashboardLayout>
+            </AdminPanelLayout>
+        </>
     );
 }

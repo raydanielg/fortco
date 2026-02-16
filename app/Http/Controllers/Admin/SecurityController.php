@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class SecurityController extends Controller
 {
@@ -151,6 +151,13 @@ class SecurityController extends Controller
                 'id' => $e->id,
                 'user_id' => $u?->id,
                 'full_name' => $e->full_name,
+                'first_name' => $e->first_name,
+                'middle_name' => $e->middle_name,
+                'last_name' => $e->last_name,
+                'hire_date' => $e->hire_date,
+                'national_id' => $e->national_id,
+                'department' => $e->department,
+                'sex' => $e->sex,
                 'designation' => $e->designation,
                 'phone' => $e->phone,
                 'country' => $e->country,
@@ -169,6 +176,137 @@ class SecurityController extends Controller
         })->values();
 
         return response()->json(['employees' => $payload]);
+    }
+
+    public function storeEmployee(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'middle_name' => ['nullable', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'hire_date' => ['nullable', 'date'],
+            'national_id' => ['nullable', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            'role' => [
+                'required',
+                'string',
+                'max:120',
+                Rule::exists('roles', 'name')->where(fn ($q) => $q->where('guard_name', 'web')),
+            ],
+            'designation' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'sex' => ['nullable', 'string', 'max:20'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ]);
+
+        $fullName = trim(implode(' ', array_filter([
+            $validated['first_name'] ?? '',
+            $validated['middle_name'] ?? '',
+            $validated['last_name'] ?? '',
+        ], fn ($s) => trim((string) $s) !== '')));
+
+        $employee = null;
+
+        DB::transaction(function () use ($validated, $fullName, &$employee) {
+            $user = User::query()->create([
+                'name' => $fullName,
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
+
+            try {
+                $user->syncRoles([$validated['role']]);
+            } catch (\Throwable $e) {
+            }
+
+            $employee = Employee::query()->create([
+                'user_id' => $user->id,
+                'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'last_name' => $validated['last_name'],
+                'full_name' => $fullName,
+                'hire_date' => $validated['hire_date'] ?? null,
+                'national_id' => $validated['national_id'] ?? null,
+                'department' => $validated['role'] ?? null,
+                'designation' => $validated['designation'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'sex' => $validated['sex'] ?? null,
+            ]);
+        });
+
+        return response()->json([
+            'created' => true,
+            'employee' => [
+                'id' => $employee?->id,
+                'user_id' => $employee?->user_id,
+                'full_name' => $employee?->full_name,
+                'designation' => $employee?->designation,
+                'phone' => $employee?->phone,
+                'department' => $employee?->department,
+                'sex' => $employee?->sex,
+                'hire_date' => $employee?->hire_date,
+                'national_id' => $employee?->national_id,
+            ],
+        ]);
+    }
+
+    public function updateEmployee(Request $request, Employee $employee)
+    {
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'middle_name' => ['nullable', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'hire_date' => ['nullable', 'date'],
+            'national_id' => ['nullable', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($employee->user_id)],
+            'role' => [
+                'required',
+                'string',
+                'max:120',
+                Rule::exists('roles', 'name')->where(fn ($q) => $q->where('guard_name', 'web')),
+            ],
+            'designation' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'sex' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $fullName = trim(implode(' ', array_filter([
+            $validated['first_name'] ?? '',
+            $validated['middle_name'] ?? '',
+            $validated['last_name'] ?? '',
+        ], fn ($s) => trim((string) $s) !== '')));
+
+        DB::transaction(function () use ($employee, $validated, $fullName) {
+            $employee->fill([
+                'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'last_name' => $validated['last_name'],
+                'full_name' => $fullName,
+                'hire_date' => $validated['hire_date'] ?? null,
+                'national_id' => $validated['national_id'] ?? null,
+                'department' => $validated['role'] ?? null,
+                'designation' => $validated['designation'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'sex' => $validated['sex'] ?? null,
+            ]);
+            $employee->save();
+
+            $user = $employee->user;
+            if ($user) {
+                $user->email = $validated['email'];
+                $user->name = $fullName;
+                $user->save();
+
+                try {
+                    $user->syncRoles([$validated['role']]);
+                } catch (\Throwable $e) {
+                }
+            }
+        });
+
+        return response()->json([
+            'updated' => true,
+        ]);
     }
 
     public function banUser(Request $request, User $user)
@@ -211,6 +349,26 @@ class SecurityController extends Controller
         return response()->json([
             'message' => trans($status),
         ], 422);
+    }
+
+    public function resetUserPasswordDefault(Request $request, User $user)
+    {
+        $defaultPassword = 'fortco123';
+
+        $user->forceFill([
+            'password' => Hash::make($defaultPassword),
+        ])->save();
+
+        try {
+            if (config('session.driver') === 'database') {
+                DB::table('sessions')->where('user_id', $user->id)->delete();
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return response()->json([
+            'reset' => true,
+        ]);
     }
 
     public function deleteUser(Request $request, User $user)

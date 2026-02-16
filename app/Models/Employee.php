@@ -14,7 +14,14 @@ class Employee extends Model implements HasMedia
 
     protected $fillable = [
         'user_id',
+        'first_name',
+        'middle_name',
+        'last_name',
         'full_name',
+        'hire_date',
+        'national_id',
+        'department',
+        'sex',
         'designation',
         'phone',
         'country',

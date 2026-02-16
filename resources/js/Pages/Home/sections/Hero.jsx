@@ -10,13 +10,7 @@ export default function Hero() {
     const sampleAvatars = useMemo(() => {
         const fromSlides = slides.slice(0, 4);
         if (fromSlides.length === 4) return fromSlides;
-
-        return [
-            '/slides/beautiful-view-construction-site-city-building_653669-11417.jpg',
-            '/slides/building-new-concrete-houses_1398-3932.jpg',
-            '/slides/construction-site-silhouettes_1127-3253.jpg',
-            '/slides/young-black-race-man-with-blueprint-stading-near-glass-building_1157-50906.jpg',
-        ];
+        return [];
     }, [slides]);
 
     const resolvedSlides = useMemo(() => {
@@ -165,17 +159,19 @@ export default function Hero() {
                             </a>
                         </div>
                         <div className="mt-10 flex items-center gap-4">
-                            <div className="flex -space-x-3">
-                                {sampleAvatars.map((src, i) => (
-                                    <img
-                                        key={`${src}-${i}`}
-                                        src={src}
-                                        alt=""
-                                        className="h-10 w-10 rounded-full border-2 border-white/40 object-cover"
-                                        loading="lazy"
-                                    />
-                                ))}
-                            </div>
+                            {sampleAvatars.length > 0 ? (
+                                <div className="flex -space-x-3">
+                                    {sampleAvatars.map((src, i) => (
+                                        <img
+                                            key={`${src}-${i}`}
+                                            src={src}
+                                            alt=""
+                                            className="h-10 w-10 rounded-full border-2 border-white/40 object-cover"
+                                            loading="lazy"
+                                        />
+                                    ))}
+                                </div>
+                            ) : null}
                             <div className="text-sm font-extrabold tracking-wide text-white/85">
                                 Trusted by <span className="text-white">50+ Teams</span> across Tanzania
                             </div>

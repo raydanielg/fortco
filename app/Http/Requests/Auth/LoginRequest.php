@@ -52,12 +52,7 @@ class LoginRequest extends FormRequest
 
         $user = Auth::user();
         if ($user && !empty($user->banned_at)) {
-            Auth::guard('web')->logout();
-            RateLimiter::hit($this->throttleKey());
-
-            throw ValidationException::withMessages([
-                'email' => 'Your account is banned. Please contact support.',
-            ]);
+            return;
         }
 
         if ($user) {

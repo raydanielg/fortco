@@ -1,4 +1,4 @@
-import DashboardLayout from '@/Layouts/DashboardLayout';
+import AdminPanelLayout from '@/Layouts/AdminPanelLayout';
 import { Head } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -113,9 +113,22 @@ export default function Roles() {
             .finally(() => setBusy(false));
     };
 
+    const items = useMemo(
+        () => [
+            { key: 'users', label: 'Users', href: route('admin.user-management.users') },
+            { key: 'employees', label: 'Employees', href: route('admin.user-management.employees') },
+            { key: 'roles', label: 'Roles', href: route('admin.user-management.roles') },
+            { key: 'permissions', label: 'Permissions', href: route('admin.user-management.permissions') },
+            { key: 'sessions-logs', label: 'Sessions & Logs', href: route('admin.user-management.sessions-logs') },
+        ],
+        []
+    );
+
     return (
-        <DashboardLayout title="User Management" breadcrumbs={['Admin', 'User Management', 'Roles']}>
+        <>
             <Head title="Roles" />
+
+            <AdminPanelLayout title="User Management" active="roles" items={items}>
 
             <div className="rounded-2xl border border-slate-200 bg-white">
                 <div className="border-b border-slate-200 px-6 py-4">
@@ -230,6 +243,7 @@ export default function Roles() {
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
+            </AdminPanelLayout>
+        </>
     );
 }

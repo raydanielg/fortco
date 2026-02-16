@@ -1,1 +1,0 @@
-import{j as e}from"./app-Be5uCMNC.js";import t from"./SettingsSectionShell-BKQE600h.js";function a(){return e.jsx(t,{title:"Update App",description:"Manage system updates, version checks, and maintenance operations.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{a as default};

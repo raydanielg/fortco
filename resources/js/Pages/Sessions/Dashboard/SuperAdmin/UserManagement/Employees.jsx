@@ -1,4 +1,4 @@
-import DashboardLayout from '@/Layouts/DashboardLayout';
+import AdminPanelLayout from '@/Layouts/AdminPanelLayout';
 import DocumentPreview from '@/Components/DocumentPreview';
 import { Head } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +16,45 @@ export default function Employees() {
 
     const [menuEmployeeId, setMenuEmployeeId] = useState('');
     const menuRef = useRef(null);
+
+    const [openCreate, setOpenCreate] = useState(false);
+    const [createStep, setCreateStep] = useState(1);
+    const [roles, setRoles] = useState([]);
+
+    const [openEdit, setOpenEdit] = useState(false);
+    const [editEmployeeId, setEditEmployeeId] = useState('');
+    const [edit, setEdit] = useState({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        hire_date: '',
+        national_id: '',
+        email: '',
+        role: '',
+        designation: '',
+        phone: '',
+        sex: '',
+    });
+
+    const [openReset, setOpenReset] = useState(false);
+    const [resetUserId, setResetUserId] = useState('');
+    const [resetEmail, setResetEmail] = useState('');
+    const [resetDone, setResetDone] = useState(false);
+
+    const [create, setCreate] = useState({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        hire_date: '',
+        national_id: '',
+        email: '',
+        role: '',
+        designation: '',
+        phone: '',
+        sex: '',
+        password: '',
+        password_confirm: '',
+    });
 
     const csrf = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -44,10 +83,126 @@ export default function Employees() {
             .finally(() => setBusy(false));
     };
 
+    const openResetFor = (emp) => {
+        const uid = emp?.user?.id || emp?.user_id;
+        if (!uid) return;
+        setResetUserId(String(uid));
+        setResetEmail(String(emp?.user?.email || ''));
+        setResetDone(false);
+        setOpenReset(true);
+    };
+
+    const confirmReset = () => {
+        if (!resetUserId) return;
+        setBusy(true);
+        setError('');
+
+        fetch(route('admin.security.users.password-reset-default', { user: resetUserId }), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrf(),
+                Accept: 'application/json',
+            },
+        })
+            .then(async (r) => {
+                const json = await readJson(r);
+                if (!r.ok) throw new Error(json?.message || 'Failed to reset password');
+                setResetDone(true);
+            })
+            .catch((e) => setError(e?.message || 'Failed to reset password'))
+            .finally(() => setBusy(false));
+    };
+
+    const openEditFor = (emp) => {
+        if (!emp?.id) return;
+        setEditEmployeeId(String(emp.id));
+        setEdit({
+            first_name: emp?.first_name || '',
+            middle_name: emp?.middle_name || '',
+            last_name: emp?.last_name || '',
+            hire_date: emp?.hire_date ? String(emp.hire_date).slice(0, 10) : '',
+            national_id: emp?.national_id || '',
+            email: emp?.user?.email || '',
+            role: emp?.department || '',
+            designation: emp?.designation || '',
+            phone: emp?.phone || '',
+            sex: emp?.sex || '',
+        });
+        setOpenEdit(true);
+    };
+
+    const submitEdit = () => {
+        if (!editEmployeeId) return;
+        setBusy(true);
+        setError('');
+        fetch(route('admin.security.employees.update', { employee: editEmployeeId }), {
+            method: 'PUT',
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrf(),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                first_name: edit.first_name,
+                middle_name: edit.middle_name || null,
+                last_name: edit.last_name,
+                hire_date: edit.hire_date || null,
+                national_id: edit.national_id || null,
+                email: edit.email,
+                role: edit.role,
+                designation: edit.designation || null,
+                phone: edit.phone || null,
+                sex: edit.sex || null,
+            }),
+        })
+            .then(async (r) => {
+                const json = await readJson(r);
+                if (!r.ok) {
+                    const msg =
+                        json?.message ||
+                        json?.errors?.email?.[0] ||
+                        json?.errors?.role?.[0] ||
+                        json?.errors?.first_name?.[0] ||
+                        json?.errors?.last_name?.[0] ||
+                        'Failed to update employee';
+                    throw new Error(msg);
+                }
+                setOpenEdit(false);
+                setEditEmployeeId('');
+                fetchEmployees();
+            })
+            .catch((e) => setError(e?.message || 'Failed to update employee'))
+            .finally(() => setBusy(false));
+    };
+
+    const fetchRoles = () => {
+        fetch(route('admin.role-permission.data'), {
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+        })
+            .then(async (r) => {
+                const json = await readJson(r);
+                if (!r.ok) throw new Error(json?.message || 'Failed to load roles');
+                setRoles(Array.isArray(json?.roles) ? json.roles : []);
+            })
+            .catch(() => setRoles([]));
+    };
+
     useEffect(() => {
         fetchEmployees();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (!openCreate) return;
+        setCreateStep(1);
+        fetchRoles();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openCreate]);
 
     useEffect(() => {
         const onDoc = (e) => {
@@ -259,6 +414,71 @@ export default function Employees() {
         w.print();
     };
 
+    const submitCreate = () => {
+        if ((create.password || '') !== (create.password_confirm || '')) {
+            setError('Password confirmation does not match.');
+            return;
+        }
+
+        setBusy(true);
+        setError('');
+        fetch(route('admin.security.employees.store'), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrf(),
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                first_name: create.first_name,
+                middle_name: create.middle_name || null,
+                last_name: create.last_name,
+                hire_date: create.hire_date || null,
+                national_id: create.national_id || null,
+                email: create.email,
+                role: create.role,
+                designation: create.designation || null,
+                phone: create.phone || null,
+                sex: create.sex || null,
+                password: create.password,
+            }),
+        })
+            .then(async (r) => {
+                const json = await readJson(r);
+                if (!r.ok) {
+                    const msg =
+                        json?.message ||
+                        json?.errors?.email?.[0] ||
+                        json?.errors?.role?.[0] ||
+                        json?.errors?.password?.[0] ||
+                        json?.errors?.first_name?.[0] ||
+                        json?.errors?.last_name?.[0] ||
+                        'Failed to create employee';
+                    throw new Error(msg);
+                }
+                setOpenCreate(false);
+                setCreate({
+                    first_name: '',
+                    middle_name: '',
+                    last_name: '',
+                    hire_date: '',
+                    national_id: '',
+                    email: '',
+                    role: '',
+                    designation: '',
+                    phone: '',
+                    sex: '',
+                    password: '',
+                    password_confirm: '',
+                });
+                fetchEmployees();
+            })
+            .catch((e) => setError(e?.message || 'Failed to create employee'))
+            .finally(() => setBusy(false));
+    };
+
     const filtered = useMemo(() => {
         const query = q.trim().toLowerCase();
         if (!query) return employees;
@@ -271,9 +491,22 @@ export default function Employees() {
         });
     }, [employees, q]);
 
+    const items = useMemo(
+        () => [
+            { key: 'users', label: 'Users', href: route('admin.user-management.users') },
+            { key: 'employees', label: 'Employees', href: route('admin.user-management.employees') },
+            { key: 'roles', label: 'Roles', href: route('admin.user-management.roles') },
+            { key: 'permissions', label: 'Permissions', href: route('admin.user-management.permissions') },
+            { key: 'sessions-logs', label: 'Sessions & Logs', href: route('admin.user-management.sessions-logs') },
+        ],
+        []
+    );
+
     return (
-        <DashboardLayout title="User Management" breadcrumbs={['Admin', 'User Management', 'Employees']}>
+        <>
             <Head title="Employees" />
+
+            <AdminPanelLayout title="User Management" active="employees" items={items}>
 
             <DocumentPreview open={pdfOpen} title="PDF Preview" onBack={() => setPdfOpen(false)} onPrint={printPdf} kind="html" srcDoc={pdfHtml} iframeRef={pdfFrameRef} />
 
@@ -296,6 +529,13 @@ export default function Employees() {
                         />
                         <button
                             type="button"
+                            onClick={() => setOpenCreate(true)}
+                            className="rounded-xl bg-slate-900 px-4 py-2 text-[12px] font-semibold text-white hover:bg-slate-800"
+                        >
+                            Create Employee
+                        </button>
+                        <button
+                            type="button"
                             onClick={exportPdf}
                             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50"
                         >
@@ -314,11 +554,384 @@ export default function Employees() {
                 <div className="p-6">
                     {error ? <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[12px] text-red-700">{error}</div> : null}
 
+                    {openReset ? (
+                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/40 p-4">
+                            <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                                <div className="border-b border-slate-200 px-6 py-4">
+                                    <div className="text-sm font-semibold text-slate-900">Reset password</div>
+                                    <div className="mt-1 text-[12px] text-slate-500">
+                                        This will set the user password to a default value.
+                                    </div>
+                                </div>
+
+                                <div className="p-6">
+                                    {!resetDone ? (
+                                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] text-amber-900">
+                                            <div className="font-semibold">Confirm action</div>
+                                            <div className="mt-1 text-amber-800">
+                                                Reset password for <span className="font-semibold">{resetEmail || 'this user'}</span> to default
+                                                password <span className="font-mono font-semibold">fortco123</span>?
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[12px] text-emerald-900">
+                                            <div className="font-semibold">Password reset completed</div>
+                                            <div className="mt-1 text-emerald-800">Default password is:</div>
+                                            <div className="mt-2 rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-[12px] text-slate-900">
+                                                fortco123
+                                            </div>
+                                            <div className="mt-2 text-[11px] text-emerald-800">You can copy and share it with the user.</div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setOpenReset(false)}
+                                        disabled={busy}
+                                        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                    >
+                                        {resetDone ? 'Close' : 'Cancel'}
+                                    </button>
+                                    {!resetDone ? (
+                                        <button
+                                            type="button"
+                                            onClick={confirmReset}
+                                            disabled={busy}
+                                            className="rounded-xl bg-slate-900 px-4 py-2 text-[12px] font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                                        >
+                                            {busy ? 'Resetting…' : 'Confirm reset'}
+                                        </button>
+                                    ) : null}
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {openEdit ? (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/40 p-4">
+                            <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                                <div className="border-b border-slate-200 px-6 py-4">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <div className="text-sm font-semibold text-slate-900">Edit Employee</div>
+                                            <div className="mt-1 text-[12px] text-slate-500">Update employee details (no password change here).</div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenEdit(false)}
+                                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="p-6">
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">First name</label>
+                                            <input value={edit.first_name} onChange={(e) => setEdit((p) => ({ ...p, first_name: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Middle name</label>
+                                            <input value={edit.middle_name} onChange={(e) => setEdit((p) => ({ ...p, middle_name: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Last name</label>
+                                            <input value={edit.last_name} onChange={(e) => setEdit((p) => ({ ...p, last_name: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Sex</label>
+                                            <select value={edit.sex} onChange={(e) => setEdit((p) => ({ ...p, sex: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]">
+                                                <option value="">Select</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Hire date</label>
+                                            <input type="date" value={edit.hire_date} onChange={(e) => setEdit((p) => ({ ...p, hire_date: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">National ID</label>
+                                            <input value={edit.national_id} onChange={(e) => setEdit((p) => ({ ...p, national_id: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div className="sm:col-span-2">
+                                            <label className="text-[11px] font-semibold text-slate-700">Email (username)</label>
+                                            <input value={edit.email} onChange={(e) => setEdit((p) => ({ ...p, email: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Role</label>
+                                            <select value={edit.role} onChange={(e) => setEdit((p) => ({ ...p, role: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]">
+                                                <option value="">Select role</option>
+                                                {roles.map((r) => (
+                                                    <option key={r.id} value={r.name}>
+                                                        {r.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[11px] font-semibold text-slate-700">Designation</label>
+                                            <input value={edit.designation} onChange={(e) => setEdit((p) => ({ ...p, designation: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+
+                                        <div className="sm:col-span-2">
+                                            <label className="text-[11px] font-semibold text-slate-700">Mobile number</label>
+                                            <input value={edit.phone} onChange={(e) => setEdit((p) => ({ ...p, phone: e.target.value }))} className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                                    <button type="button" onClick={() => setOpenEdit(false)} disabled={busy} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+                                        Cancel
+                                    </button>
+                                    <button type="button" onClick={submitEdit} disabled={busy} className="rounded-xl bg-slate-900 px-4 py-2 text-[12px] font-semibold text-white hover:bg-slate-800 disabled:opacity-60">
+                                        {busy ? 'Saving…' : 'Save changes'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {openCreate ? (
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/40 p-4">
+                            <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                                <div className="border-b border-slate-200 px-6 py-4">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <div className="text-sm font-semibold text-slate-900">Create Employee</div>
+                                            <div className="mt-1 text-[12px] text-slate-500">Fill employee details. A user account will be created and a reset link will be sent to the email.</div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenCreate(false)}
+                                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="p-6">
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        {createStep === 1 ? (
+                                            <>
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">First name</label>
+                                                    <input
+                                                        value={create.first_name}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, first_name: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="John"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Middle name</label>
+                                                    <input
+                                                        value={create.middle_name}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, middle_name: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="(optional)"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Last name</label>
+                                                    <input
+                                                        value={create.last_name}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, last_name: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="Doe"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Sex</label>
+                                                    <select
+                                                        value={create.sex}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, sex: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                    >
+                                                        <option value="">Select</option>
+                                                        <option value="male">Male</option>
+                                                        <option value="female">Female</option>
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Hire date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={create.hire_date}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, hire_date: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">National ID</label>
+                                                    <input
+                                                        value={create.national_id}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, national_id: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="NIDA / Passport"
+                                                    />
+                                                </div>
+
+                                                <div className="sm:col-span-2">
+                                                    <label className="text-[11px] font-semibold text-slate-700">Email (will be username)</label>
+                                                    <input
+                                                        value={create.email}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, email: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="john@company.com"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Role</label>
+                                                    <select
+                                                        value={create.role}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, role: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                    >
+                                                        <option value="">Select role</option>
+                                                        {roles.map((r) => (
+                                                            <option key={r.id} value={r.name}>
+                                                                {r.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Designation</label>
+                                                    <input
+                                                        value={create.designation}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, designation: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="Accountant"
+                                                    />
+                                                </div>
+
+                                                <div className="sm:col-span-2">
+                                                    <label className="text-[11px] font-semibold text-slate-700">Mobile number</label>
+                                                    <input
+                                                        value={create.phone}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, phone: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="+255..."
+                                                    />
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="sm:col-span-2">
+                                                    <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[12px] text-slate-700">
+                                                        <div className="font-semibold text-slate-900">Account details</div>
+                                                        <div className="mt-1 text-slate-600">Username will be the email you entered.</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-2">
+                                                    <label className="text-[11px] font-semibold text-slate-700">Username</label>
+                                                    <input
+                                                        value={create.email}
+                                                        readOnly
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-700"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Password</label>
+                                                    <input
+                                                        type="password"
+                                                        value={create.password}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, password: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                        placeholder="Minimum 8 characters"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[11px] font-semibold text-slate-700">Confirm password</label>
+                                                    <input
+                                                        type="password"
+                                                        value={create.password_confirm}
+                                                        onChange={(e) => setCreate((p) => ({ ...p, password_confirm: e.target.value }))}
+                                                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px]"
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                                    {createStep === 2 ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setCreateStep(1)}
+                                            disabled={busy}
+                                            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                        >
+                                            Back
+                                        </button>
+                                    ) : null}
+                                    <button
+                                        type="button"
+                                        onClick={() => setOpenCreate(false)}
+                                        disabled={busy}
+                                        className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (createStep === 1) {
+                                                if (!create.first_name.trim() || !create.last_name.trim() || !create.email.trim() || !create.role.trim()) {
+                                                    setError('Please fill required fields (first name, last name, email, role).');
+                                                    return;
+                                                }
+                                                setError('');
+                                                setCreateStep(2);
+                                                return;
+                                            }
+                                            submitCreate();
+                                        }}
+                                        disabled={busy}
+                                        className="rounded-xl bg-slate-900 px-4 py-2 text-[12px] font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                                    >
+                                        {createStep === 1 ? 'Next' : busy ? 'Saving…' : 'Create Employee'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+
                     <table className="w-full border border-slate-200 text-left text-[12px]">
                         <thead className="bg-slate-50 text-slate-600">
                             <tr>
                                 <th className="px-4 py-3 font-semibold">Full Name</th>
                                 <th className="px-4 py-3 font-semibold">Email</th>
+                                <th className="px-4 py-3 font-semibold">National ID</th>
+                                <th className="px-4 py-3 font-semibold">Hire Date</th>
+                                <th className="px-4 py-3 font-semibold">Sex</th>
+                                <th className="px-4 py-3 font-semibold">Department</th>
                                 <th className="px-4 py-3 font-semibold">Designation</th>
                                 <th className="px-4 py-3 font-semibold">Phone</th>
                                 <th className="px-4 py-3 font-semibold">Sessions</th>
@@ -333,6 +946,10 @@ export default function Employees() {
                                     <tr key={e.id} className="bg-white hover:bg-slate-50">
                                         <td className="px-4 py-3 font-semibold text-slate-900">{e.full_name}</td>
                                         <td className="px-4 py-3 text-slate-700">{e.user?.email || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-700">{e.national_id || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-700">{e.hire_date ? new Date(e.hire_date).toLocaleDateString() : '-'}</td>
+                                        <td className="px-4 py-3 text-slate-700">{e.sex || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-700">{e.department || '-'}</td>
                                         <td className="px-4 py-3 text-slate-700">{e.designation || '-'}</td>
                                         <td className="px-4 py-3 text-slate-700">{e.phone || '-'}</td>
                                         <td className="px-4 py-3 text-slate-700">{e.sessions_count ?? 0}</td>
@@ -358,6 +975,16 @@ export default function Employees() {
                                                             type="button"
                                                             onClick={() => {
                                                                 setMenuEmployeeId('');
+                                                                openEditFor(e);
+                                                            }}
+                                                            className="block w-full px-4 py-2 text-left text-[12px] text-slate-700 hover:bg-slate-50"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setMenuEmployeeId('');
                                                                 viewProfile(e);
                                                             }}
                                                             className="block w-full px-4 py-2 text-left text-[12px] text-slate-700 hover:bg-slate-50"
@@ -378,7 +1005,7 @@ export default function Employees() {
                                                             type="button"
                                                             onClick={() => {
                                                                 setMenuEmployeeId('');
-                                                                resetPassword(e);
+                                                                openResetFor(e);
                                                             }}
                                                             className="block w-full px-4 py-2 text-left text-[12px] text-slate-700 hover:bg-slate-50"
                                                         >
@@ -392,7 +1019,7 @@ export default function Employees() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td className="px-4 py-6 text-slate-500" colSpan={8}>
+                                    <td className="px-4 py-6 text-slate-500" colSpan={12}>
                                         No employees found.
                                     </td>
                                 </tr>
@@ -401,6 +1028,7 @@ export default function Employees() {
                     </table>
                 </div>
             </div>
-        </DashboardLayout>
+            </AdminPanelLayout>
+        </>
     );
 }

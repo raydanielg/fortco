@@ -1,4 +1,4 @@
-import DashboardLayout from '@/Layouts/DashboardLayout';
+import AdminPanelLayout from '@/Layouts/AdminPanelLayout';
 import DocumentPreview from '@/Components/DocumentPreview';
 import { Head } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -359,9 +359,22 @@ export default function Users() {
         });
     }, [users, q]);
 
+    const items = useMemo(
+        () => [
+            { key: 'users', label: 'Users', href: route('admin.user-management.users') },
+            { key: 'employees', label: 'Employees', href: route('admin.user-management.employees') },
+            { key: 'roles', label: 'Roles', href: route('admin.user-management.roles') },
+            { key: 'permissions', label: 'Permissions', href: route('admin.user-management.permissions') },
+            { key: 'sessions-logs', label: 'Sessions & Logs', href: route('admin.user-management.sessions-logs') },
+        ],
+        []
+    );
+
     return (
-        <DashboardLayout title="User Management" breadcrumbs={['Admin', 'User Management', 'Users']}>
+        <>
             <Head title="Users" />
+
+            <AdminPanelLayout title="User Management" active="users" items={items}>
 
             <DocumentPreview
                 open={pdfOpen}
@@ -509,6 +522,7 @@ export default function Users() {
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
+            </AdminPanelLayout>
+        </>
     );
 }

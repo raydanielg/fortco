@@ -403,58 +403,59 @@ export default function Sidebar({
     title,
     userName,
     isSuperAdmin = false,
+    canUserManagement = false,
     isOpen,
     onClose,
 }) {
     const [query, setQuery] = useState('');
 
-    const [openDashboard, setOpenDashboard] = useState(true);
-    const [openConstruction, setOpenConstruction] = useState(false);
-    const [openRealEstate, setOpenRealEstate] = useState(false);
-    const [openLoans, setOpenLoans] = useState(false);
-    const [openAppointments, setOpenAppointments] = useState(false);
-    const [openPortfolio, setOpenPortfolio] = useState(false);
-    const [openUsers, setOpenUsers] = useState(false);
-    const [openUserManagement, setOpenUserManagement] = useState(false);
-    const [openBilling, setOpenBilling] = useState(false);
-    const [openCompanies, setOpenCompanies] = useState(false);
-    const [openReports, setOpenReports] = useState(false);
-    const [openSupport, setOpenSupport] = useState(false);
-    const [openFront, setOpenFront] = useState(false);
-    const [openSettings, setOpenSettings] = useState(false);
-    const [openSuperAdmin, setOpenSuperAdmin] = useState(false);
-    const [openPackages, setOpenPackages] = useState(false);
-    const [openOffline, setOpenOffline] = useState(false);
-    const [openFaq, setOpenFaq] = useState(false);
-
     const menu = useMemo(() => {
         if (!isSuperAdmin) {
-            return [
+            const items = [
                 {
                     key: 'dashboard',
                     label: 'Dashboard',
                     icon: IconGrid,
-                    open: openDashboard,
-                    setOpen: setOpenDashboard,
-                    children: [
-                        { label: 'Main Dashboard', href: route('dashboard') },
-                    ],
+                    href: route('dashboard'),
+                },
+                {
+                    key: 'tickets',
+                    label: 'TICKETS',
+                    icon: IconSupport,
+                    href: route('support.tickets'),
                 },
             ];
+
+            if (canUserManagement) {
+                items.push({
+                    key: 'user_management',
+                    label: 'USER MANAGEMENT',
+                    icon: IconLock,
+                    href: route('admin.user-management.users'),
+                });
+            }
+
+            return items;
         }
 
         return [
             {
-                key: 'dashboard',
+                key: 'dashboard_main',
                 label: 'DASHBOARD',
                 icon: makeMenuIcon(activity),
-                open: openDashboard,
-                setOpen: setOpenDashboard,
-                children: [
-                    { label: 'Main Dashboard', href: route('dashboard') },
-                    { label: 'Analytics', href: route('admin.analytics'), icon: makeMenuIcon(activity) },
-                    { label: 'System Health', href: route('admin.system-health'), icon: makeMenuIcon(alertCircle) },
-                ],
+                href: route('dashboard'),
+            },
+            {
+                key: 'dashboard_analytics',
+                label: 'ANALYTICS',
+                icon: makeMenuIcon(activity),
+                href: route('admin.analytics'),
+            },
+            {
+                key: 'dashboard_system_health',
+                label: 'SYSTEM HEALTH',
+                icon: makeMenuIcon(alertCircle),
+                href: route('admin.system-health'),
             },
             {
                 key: 'construction',
@@ -472,64 +473,31 @@ export default function Sidebar({
                 key: 'loans',
                 label: 'LOANS',
                 icon: IconCash,
-                open: openLoans,
-                setOpen: setOpenLoans,
-                children: [
-                    { label: 'Companies', href: '#' },
-                    { label: 'Applications', href: '#' },
-                    { label: 'Repayments', href: '#' },
-                ],
+                href: route('admin.loans.companies'),
             },
             {
                 key: 'appointments',
                 label: 'APPOINTMENTS',
                 icon: IconCalendar,
-                open: openAppointments,
-                setOpen: setOpenAppointments,
-                children: [
-                    { label: 'Calendar', href: '#' },
-                    { label: 'Bookings', href: '#' },
-                    { label: 'Services', href: '#' },
-                ],
+                href: route('admin.appointments.calendar'),
             },
             {
                 key: 'portfolio',
                 label: 'PORTFOLIO',
                 icon: IconImage,
-                open: openPortfolio,
-                setOpen: setOpenPortfolio,
-                children: [
-                    { label: 'Projects', href: route('admin.portfolio-projects') },
-                    { label: 'Gallery', href: '#' },
-                    { label: 'Testimonials', href: '#' },
-                    { label: 'Awards', href: '#' },
-                ],
+                href: route('admin.portfolio-projects'),
             },
             {
                 key: 'user_management',
                 label: 'USER MANAGEMENT',
                 icon: IconLock,
-                open: openUserManagement,
-                setOpen: setOpenUserManagement,
-                children: [
-                    { label: 'Users', href: route('admin.user-management.users') },
-                    { label: 'Employees', href: route('admin.user-management.employees') },
-                    { label: 'Roles', href: route('admin.user-management.roles') },
-                    { label: 'Permissions', href: route('admin.user-management.permissions') },
-                    { label: 'Sessions & Logs', href: route('admin.user-management.sessions-logs') },
-                ],
+                href: route('admin.user-management.users'),
             },
             {
                 key: 'billing',
                 label: 'BILLING',
                 icon: IconCard,
-                open: openBilling,
-                setOpen: setOpenBilling,
-                children: [
-                    { label: 'Invoices', href: '#' },
-                    { label: 'Transactions', href: '#' },
-                    { label: 'Gateways', href: '#' },
-                ],
+                href: route('admin.billing.invoices'),
             },
             {
                 key: 'companies',
@@ -541,25 +509,25 @@ export default function Sidebar({
                 key: 'reports',
                 label: 'REPORTS',
                 icon: IconReport,
-                open: openReports,
-                setOpen: setOpenReports,
-                children: [
-                    { label: 'Financial', href: '#' },
-                    { label: 'Projects', href: '#' },
-                    { label: 'Export', href: '#' },
-                ],
+                href: route('admin.reports.financial'),
             },
             {
                 key: 'support',
                 label: 'SUPPORT',
                 icon: IconSupport,
-                open: openSupport,
-                setOpen: setOpenSupport,
-                children: [
-                    { label: 'Tickets', href: '#' },
-                    { label: 'Live Chat', href: '#' },
-                    { label: 'Knowledge Base', href: '#' },
-                ],
+                href: route('admin.support.tickets'),
+            },
+            {
+                key: 'tickets',
+                label: 'TICKETS',
+                icon: IconSupport,
+                href: route('support.tickets'),
+            },
+            {
+                key: 'tasks',
+                label: 'TASKS',
+                icon: IconChart,
+                href: route('admin.tasks.employee'),
             },
             {
                 key: 'front',
@@ -577,38 +545,19 @@ export default function Sidebar({
                 key: 'superadmin',
                 label: 'SUPER ADMIN',
                 icon: IconShield,
-                open: openSuperAdmin,
-                setOpen: setOpenSuperAdmin,
-                children: [
-                    { label: 'System Audit', href: '#' },
-                    { label: 'Modules', href: '#' },
-                    { label: 'Impersonate', href: '#' },
-                    { label: 'Maintenance', href: '#' },
-                ],
+                href: route('admin.super-admin.system-audit'),
             },
             {
                 key: 'packages',
                 label: 'PACKAGES',
                 icon: IconBag,
-                open: openPackages,
-                setOpen: setOpenPackages,
-                children: [
-                    { label: 'Subscriptions', href: '#' },
-                    { label: 'Features', href: '#' },
-                    { label: 'Pricing', href: '#' },
-                ],
+                href: route('admin.packages.subscriptions'),
             },
             {
                 key: 'offline',
                 label: 'OFFLINE REQUEST',
                 icon: IconChat,
-                open: openOffline,
-                setOpen: setOpenOffline,
-                children: [
-                    { label: 'Pending', href: '#' },
-                    { label: 'Approved', href: '#' },
-                    { label: 'Rejected', href: '#' },
-                ],
+                href: route('admin.offline-request.pending'),
             },
             {
                 key: 'faq',
@@ -617,27 +566,7 @@ export default function Sidebar({
                 href: route('admin.faq'),
             },
         ];
-    }, [
-        isSuperAdmin,
-        openDashboard,
-        openConstruction,
-        openRealEstate,
-        openLoans,
-        openAppointments,
-        openPortfolio,
-        openUsers,
-        openUserManagement,
-        openBilling,
-        openCompanies,
-        openReports,
-        openSupport,
-        openFront,
-        openSettings,
-        openSuperAdmin,
-        openPackages,
-        openOffline,
-        openFaq,
-    ]);
+    }, [isSuperAdmin, canUserManagement]);
 
     const filteredMenu = useMemo(() => {
         const q = query.trim().toLowerCase();

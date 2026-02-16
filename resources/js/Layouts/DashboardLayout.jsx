@@ -53,6 +53,7 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
 
     const roles = page.props.auth?.roles || [];
     const isSuperAdmin = roles.includes('Super Admin');
+    const canUserManagement = roles.includes('Super Admin') || roles.includes('Admin') || roles.includes('HR');
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -100,6 +101,7 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
                 title={title}
                 userName={user?.name || 'Account'}
                 isSuperAdmin={isSuperAdmin}
+                canUserManagement={canUserManagement}
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
             />

@@ -18,13 +18,27 @@ use App\Http\Controllers\Admin\CompaniesPagesController;
 use App\Http\Controllers\Admin\CompanyVendorsController;
 use App\Http\Controllers\Admin\CompanyPartnersController;
 use App\Http\Controllers\Admin\CompanyCompaniesController;
+use App\Http\Controllers\Admin\TasksPagesController;
+use App\Http\Controllers\Admin\ReportsPagesController;
 use App\Http\Controllers\Admin\RealEstatePagesController;
 use App\Http\Controllers\Admin\RealEstatePropertiesController;
 use App\Http\Controllers\Admin\RealEstateBookingsController;
 use App\Http\Controllers\Admin\RealEstateClientsController;
+use App\Http\Controllers\Admin\LoansPagesController;
+use App\Http\Controllers\Admin\AppointmentsPagesController;
+use App\Http\Controllers\Admin\BillingPagesController;
+use App\Http\Controllers\Admin\SupportPagesController;
+use App\Http\Controllers\Admin\SuperAdminPagesController;
+use App\Http\Controllers\Admin\PackagesPagesController;
+use App\Http\Controllers\Admin\OfflineRequestPagesController;
+use App\Http\Controllers\Admin\PortfolioPagesController;
+use App\Http\Controllers\Admin\HelpdeskMessagesController;
+use App\Http\Controllers\Admin\KnowledgeBaseController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\PropertiesPageController;
 use App\Http\Controllers\RealEstatePropertyBookingsController;
+use App\Http\Controllers\HelpdeskChatController;
+use App\Http\Controllers\SupportTicketsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +52,12 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});
+
+Route::middleware(['auth'])->prefix('helpdesk')->group(function () {
+    Route::get('chat', [HelpdeskChatController::class, 'index'])->name('helpdesk.chat');
+    Route::get('chat/messages', [HelpdeskChatController::class, 'messages'])->name('helpdesk.chat.messages');
+    Route::post('chat/messages', [HelpdeskChatController::class, 'store'])->name('helpdesk.chat.store');
 });
 
 Route::post('/locale', function (Request $request) {
@@ -115,6 +135,10 @@ Route::get('/api/timezones', function () {
 
     return response()->json($timezones);
 })->name('api.timezones');
+
+Route::get('/banned', function () {
+    return Inertia::render('Banned');
+})->middleware(['auth'])->name('banned');
 
 Route::get('/properties', [PropertiesPageController::class, 'index'])->name('properties.index');
 Route::post('/properties/book', [RealEstatePropertyBookingsController::class, 'store'])->name('properties.book');
@@ -257,12 +281,89 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('projects/bulk', [PortfolioProjectsController::class, 'bulkDestroy'])->name('admin.portfolio-projects.bulk-destroy');
         });
 
-        Route::prefix('user-management')->group(function () {
+        Route::prefix('user-management')->middleware('any_role:Super Admin,Admin,HR')->group(function () {
             Route::get('users', [UserManagementPagesController::class, 'users'])->name('admin.user-management.users');
             Route::get('employees', [UserManagementPagesController::class, 'employees'])->name('admin.user-management.employees');
             Route::get('roles', [UserManagementPagesController::class, 'roles'])->name('admin.user-management.roles');
             Route::get('permissions', [UserManagementPagesController::class, 'permissions'])->name('admin.user-management.permissions');
             Route::get('sessions-logs', [UserManagementPagesController::class, 'sessionsLogs'])->name('admin.user-management.sessions-logs');
+        });
+
+        Route::prefix('tasks')->group(function () {
+            Route::get('employee', [TasksPagesController::class, 'employee'])->name('admin.tasks.employee');
+            Route::get('assessment', [TasksPagesController::class, 'assessment'])->name('admin.tasks.assessment');
+            Route::get('evaluation', [TasksPagesController::class, 'evaluation'])->name('admin.tasks.evaluation');
+            Route::get('task', [TasksPagesController::class, 'task'])->name('admin.tasks.task');
+            Route::get('planning', [TasksPagesController::class, 'planning'])->name('admin.tasks.planning');
+        });
+
+        Route::prefix('reports')->group(function () {
+            Route::get('financial', [ReportsPagesController::class, 'financial'])->name('admin.reports.financial');
+            Route::get('projects', [ReportsPagesController::class, 'projects'])->name('admin.reports.projects');
+            Route::get('export', [ReportsPagesController::class, 'export'])->name('admin.reports.export');
+        });
+
+        Route::prefix('loans')->group(function () {
+            Route::get('companies', [LoansPagesController::class, 'companies'])->name('admin.loans.companies');
+            Route::get('applications', [LoansPagesController::class, 'applications'])->name('admin.loans.applications');
+            Route::get('repayments', [LoansPagesController::class, 'repayments'])->name('admin.loans.repayments');
+        });
+
+        Route::prefix('appointments')->group(function () {
+            Route::get('calendar', [AppointmentsPagesController::class, 'calendar'])->name('admin.appointments.calendar');
+            Route::get('bookings', [AppointmentsPagesController::class, 'bookings'])->name('admin.appointments.bookings');
+            Route::get('services', [AppointmentsPagesController::class, 'services'])->name('admin.appointments.services');
+        });
+
+        Route::prefix('billing')->group(function () {
+            Route::get('invoices', [BillingPagesController::class, 'invoices'])->name('admin.billing.invoices');
+            Route::get('transactions', [BillingPagesController::class, 'transactions'])->name('admin.billing.transactions');
+            Route::get('gateways', [BillingPagesController::class, 'gateways'])->name('admin.billing.gateways');
+        });
+
+        Route::prefix('support')->group(function () {
+            Route::get('tickets', [SupportPagesController::class, 'tickets'])->name('admin.support.tickets');
+            Route::get('live-chat', [SupportPagesController::class, 'liveChat'])->name('admin.support.live-chat');
+            Route::get('knowledge-base', [SupportPagesController::class, 'knowledgeBase'])->name('admin.support.knowledge-base');
+            Route::get('knowledge-base/data', [KnowledgeBaseController::class, 'list'])->name('admin.knowledge-base.data');
+            Route::get('knowledge-base/categories', [KnowledgeBaseController::class, 'listCategories'])->name('admin.knowledge-base.categories.data');
+            Route::post('knowledge-base/categories', [KnowledgeBaseController::class, 'storeCategory'])->name('admin.knowledge-base.categories.store');
+            Route::delete('knowledge-base/categories/{category}', [KnowledgeBaseController::class, 'destroyCategory'])->name('admin.knowledge-base.categories.destroy');
+            Route::post('knowledge-base', [KnowledgeBaseController::class, 'store'])->name('admin.knowledge-base.store');
+            Route::put('knowledge-base/{article}', [KnowledgeBaseController::class, 'update'])->name('admin.knowledge-base.update');
+            Route::delete('knowledge-base/{article}', [KnowledgeBaseController::class, 'destroy'])->name('admin.knowledge-base.destroy');
+            Route::get('helpdesk-messages', [SupportPagesController::class, 'helpdeskMessages'])->name('admin.support.helpdesk-messages');
+        });
+
+        Route::prefix('helpdesk')->middleware('any_role:Super Admin,Admin,HR')->group(function () {
+            Route::get('conversations', [HelpdeskMessagesController::class, 'conversations'])->name('admin.helpdesk.conversations');
+            Route::get('users/{user}/messages', [HelpdeskMessagesController::class, 'messages'])->name('admin.helpdesk.messages');
+            Route::post('users/{user}/reply', [HelpdeskMessagesController::class, 'reply'])->name('admin.helpdesk.reply');
+        });
+
+        Route::prefix('super-admin')->group(function () {
+            Route::get('system-audit', [SuperAdminPagesController::class, 'systemAudit'])->name('admin.super-admin.system-audit');
+            Route::get('modules', [SuperAdminPagesController::class, 'modules'])->name('admin.super-admin.modules');
+            Route::get('impersonate', [SuperAdminPagesController::class, 'impersonate'])->name('admin.super-admin.impersonate');
+            Route::get('maintenance', [SuperAdminPagesController::class, 'maintenance'])->name('admin.super-admin.maintenance');
+        });
+
+        Route::prefix('packages')->group(function () {
+            Route::get('subscriptions', [PackagesPagesController::class, 'subscriptions'])->name('admin.packages.subscriptions');
+            Route::get('features', [PackagesPagesController::class, 'features'])->name('admin.packages.features');
+            Route::get('pricing', [PackagesPagesController::class, 'pricing'])->name('admin.packages.pricing');
+        });
+
+        Route::prefix('offline-request')->group(function () {
+            Route::get('pending', [OfflineRequestPagesController::class, 'pending'])->name('admin.offline-request.pending');
+            Route::get('approved', [OfflineRequestPagesController::class, 'approved'])->name('admin.offline-request.approved');
+            Route::get('rejected', [OfflineRequestPagesController::class, 'rejected'])->name('admin.offline-request.rejected');
+        });
+
+        Route::prefix('portfolio')->group(function () {
+            Route::get('gallery', [PortfolioPagesController::class, 'gallery'])->name('admin.portfolio.gallery');
+            Route::get('testimonials', [PortfolioPagesController::class, 'testimonials'])->name('admin.portfolio.testimonials');
+            Route::get('awards', [PortfolioPagesController::class, 'awards'])->name('admin.portfolio.awards');
         });
 
         Route::get('settings', [SettingsController::class, 'index'])->name('admin.settings');
@@ -296,13 +397,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('role-permission/permissions/{permission}', [RolePermissionController::class, 'destroyPermission'])->name('admin.role-permission.permissions.destroy');
         Route::put('role-permission/roles/{role}/permissions', [RolePermissionController::class, 'syncRolePermissions'])->name('admin.role-permission.roles.permissions.sync');
 
-        Route::prefix('security')->group(function () {
+        Route::prefix('security')->middleware('any_role:Super Admin,Admin,HR')->group(function () {
             Route::get('main', [SecurityController::class, 'main'])->name('admin.security.main');
             Route::post('main', [SecurityController::class, 'updateMain'])->name('admin.security.main.update');
             Route::get('users', [SecurityController::class, 'users'])->name('admin.security.users');
             Route::get('employees', [SecurityController::class, 'employees'])->name('admin.security.employees');
+            Route::post('employees', [SecurityController::class, 'storeEmployee'])->name('admin.security.employees.store');
+            Route::put('employees/{employee}', [SecurityController::class, 'updateEmployee'])->name('admin.security.employees.update');
             Route::post('users/{user}/ban', [SecurityController::class, 'banUser'])->name('admin.security.users.ban');
             Route::post('users/{user}/unban', [SecurityController::class, 'unbanUser'])->name('admin.security.users.unban');
+            Route::post('users/{user}/password-reset-default', [SecurityController::class, 'resetUserPasswordDefault'])->name('admin.security.users.password-reset-default');
             Route::post('users/{user}/password-reset', [SecurityController::class, 'sendPasswordResetLink'])->name('admin.security.users.password-reset');
             Route::delete('users/{user}', [SecurityController::class, 'deleteUser'])->name('admin.security.users.delete');
             Route::get('users/{user}/sessions', [SecurityController::class, 'userSessions'])->name('admin.security.users.sessions');
@@ -321,6 +425,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('{file}/download', [DatabaseBackupController::class, 'download'])->name('admin.database-backups.download');
             Route::delete('{file}', [DatabaseBackupController::class, 'destroy'])->name('admin.database-backups.destroy');
         });
+    });
+
+    Route::prefix('support')->group(function () {
+        Route::get('tickets', [SupportTicketsController::class, 'index'])->name('support.tickets');
+        Route::get('tickets/data', [SupportTicketsController::class, 'list'])->name('support.tickets.data');
+        Route::get('tickets/assignees', [SupportTicketsController::class, 'assignees'])->name('support.tickets.assignees');
+        Route::post('tickets', [SupportTicketsController::class, 'store'])->name('support.tickets.store');
+        Route::get('tickets/{ticket}', [SupportTicketsController::class, 'show'])->name('support.tickets.show');
+        Route::post('tickets/{ticket}/messages', [SupportTicketsController::class, 'message'])->name('support.tickets.messages.store');
+        Route::put('tickets/{ticket}/assign', [SupportTicketsController::class, 'assign'])->name('support.tickets.assign');
+        Route::put('tickets/{ticket}/status', [SupportTicketsController::class, 'status'])->name('support.tickets.status');
     });
 });
 

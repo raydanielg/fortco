@@ -11,9 +11,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'any_role' => \App\Http\Middleware\EnsureAnyRole::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'helpdesk/chat/messages',
+            '/helpdesk/chat/messages',
+            'admin/helpdesk/users/*/reply',
+            '/admin/helpdesk/users/*/reply',
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\CheckSecurityMaintenance::class,
+            \App\Http\Middleware\EnsureNotBanned::class,
             \App\Http\Middleware\LogHttpRequests::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
