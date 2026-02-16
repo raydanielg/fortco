@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\CompanyVendorsController;
 use App\Http\Controllers\Admin\CompanyPartnersController;
 use App\Http\Controllers\Admin\CompanyCompaniesController;
 use App\Http\Controllers\Admin\TasksPagesController;
+use App\Http\Controllers\Admin\TasksDataController;
 use App\Http\Controllers\Admin\ReportsPagesController;
 use App\Http\Controllers\Admin\RealEstatePagesController;
 use App\Http\Controllers\Admin\RealEstatePropertiesController;
@@ -111,6 +112,25 @@ Route::get('/api/hero-slides', function () {
 
     return response()->json($urls);
 })->name('hero.slides');
+
+Route::get('/api/front-settings/{section}', function (string $section) {
+    $rows = \App\Models\FrontSetting::query()
+        ->where('section', $section)
+        ->get(['key', 'value']);
+
+    $settings = [];
+    foreach ($rows as $row) {
+        $settings[$row->key] = $row->value;
+    }
+
+    return response()
+        ->json([
+        'section' => $section,
+        'settings' => $settings,
+    ])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache');
+})->name('front-settings.public');
 
 Route::get('/api/timezones', function () {
     $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
@@ -294,7 +314,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('assessment', [TasksPagesController::class, 'assessment'])->name('admin.tasks.assessment');
             Route::get('evaluation', [TasksPagesController::class, 'evaluation'])->name('admin.tasks.evaluation');
             Route::get('task', [TasksPagesController::class, 'task'])->name('admin.tasks.task');
+            Route::get('{task}/sub-task', [TasksPagesController::class, 'subTask'])->name('admin.tasks.sub-task');
             Route::get('planning', [TasksPagesController::class, 'planning'])->name('admin.tasks.planning');
+
+            // Data endpoints
+            Route::get('data', [TasksDataController::class, 'list'])->name('admin.tasks.data');
+            Route::get('planning/data', [TasksDataController::class, 'planning'])->name('admin.tasks.planning.data');
+            Route::get('evaluation/data', [TasksDataController::class, 'evaluation'])->name('admin.tasks.evaluation.data');
+            Route::get('{task}/evaluation/history', [TasksDataController::class, 'evaluationHistory'])->name('admin.tasks.evaluation.history');
+            Route::post('{task}/evaluation', [TasksDataController::class, 'evaluationStore'])->name('admin.tasks.evaluation.store');
+            Route::post('{task}/approve', [TasksDataController::class, 'approve'])->name('admin.tasks.approve');
+            Route::post('{task}/rollback', [TasksDataController::class, 'rollback'])->name('admin.tasks.rollback');
+            Route::post('{task}/submit', [TasksDataController::class, 'submit'])->name('admin.tasks.submit');
+            Route::post('store', [TasksDataController::class, 'store'])->name('admin.tasks.store');
+            Route::get('{task}', [TasksDataController::class, 'show'])->name('admin.tasks.show');
+            Route::get('{task}/sub-tasks', [TasksDataController::class, 'subTasks'])->name('admin.tasks.sub-tasks');
+            Route::post('{task}/sub-tasks', [TasksDataController::class, 'storeSubTask'])->name('admin.tasks.sub-tasks.store');
+            Route::put('{task}', [TasksDataController::class, 'update'])->name('admin.tasks.update');
+            Route::delete('{task}', [TasksDataController::class, 'destroy'])->name('admin.tasks.destroy');
         });
 
         Route::prefix('reports')->group(function () {
@@ -385,7 +422,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('settings/profile/avatar', [SettingsController::class, 'updateProfileAvatar'])->name('admin.settings.profile.avatar');
         Route::post('settings/profile/documents', [SettingsController::class, 'uploadProfileDocument'])->name('admin.settings.profile.documents.upload');
         Route::delete('settings/profile/documents/{mediaId}', [SettingsController::class, 'deleteProfileDocument'])->name('admin.settings.profile.documents.delete');
-        Route::get('front-settings', [FrontSettingsController::class, 'index'])->name('admin.front-settings');
+        Route::prefix('front-settings')->group(function () {
+            Route::get('{section?}', [FrontSettingsController::class, 'index'])->name('admin.front-settings');
+            Route::get('data/json', [FrontSettingsController::class, 'data'])->name('admin.front-settings.data');
+            Route::post('data/json', [FrontSettingsController::class, 'update'])->name('admin.front-settings.update');
+            Route::post('upload', [FrontSettingsController::class, 'upload'])->name('admin.front-settings.upload');
+        });
         Route::get('faq', [AdminFaqController::class, 'index'])->name('admin.faq');
 
         Route::get('role-permission', [RolePermissionController::class, 'index'])->name('admin.role-permission');

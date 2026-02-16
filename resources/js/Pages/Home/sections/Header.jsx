@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 
 export default function Header({ canLogin, canRegister }) {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [frontLogo, setFrontLogo] = useState('');
+    const [frontMenus, setFrontMenus] = useState([]);
     const page = usePage();
     const i18n = page.props.i18n || {};
     const locale = i18n.locale || 'en';
@@ -24,7 +26,36 @@ export default function Header({ canLogin, canRegister }) {
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [mobileOpen]);
 
-    const navigation = [
+    useEffect(() => {
+        let canceled = false;
+        fetch('/api/front-settings/header')
+            .then((r) => r)
+            .then((r) => r)
+            .catch(() => {})
+        return () => {
+            canceled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let canceled = false;
+        fetch('/api/front-settings/header', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
+            .then((r) => r.json())
+            .then((data) => {
+                if (canceled) return;
+                const s = data?.settings || {};
+                if (typeof s.logo_url === 'string') setFrontLogo(s.logo_url);
+                if (Array.isArray(s.menu_items)) setFrontMenus(s.menu_items);
+            })
+            .catch(() => {
+            });
+
+        return () => {
+            canceled = true;
+        };
+    }, []);
+
+    const defaultNavigation = [
         { name: t('nav.home', 'Home'), href: '/' },
         {
             name: t('nav.about', 'About'),
@@ -91,12 +122,19 @@ export default function Header({ canLogin, canRegister }) {
         { name: t('nav.login', 'Login'), href: route('login') },
     ];
 
+    const navigation = useMemo(() => {
+        if (!Array.isArray(frontMenus) || frontMenus.length === 0) return defaultNavigation;
+        return frontMenus
+            .filter((x) => x && String(x.label || '').trim() && String(x.href || '').trim())
+            .map((x) => ({ name: String(x.label), href: String(x.href) }));
+    }, [frontMenus, defaultNavigation]);
+
     return (
         <header className="sticky top-0 z-50">
             <nav className="bg-sand-200/90 border-b border-black/5 px-4 lg:px-6 py-3 backdrop-blur-md">
                 <div className="flex flex-wrap items-center justify-between mx-auto max-w-screen-xl">
                     <Link href="/" className="flex items-center">
-                        <img src="/logo.png" className="h-9 w-auto" alt="Fortco Logo" />
+                        <img src={frontLogo || '/logo.png'} className="h-9 w-auto" alt="Fortco Logo" />
                     </Link>
 
                     <div className="flex items-center gap-3 lg:order-3">

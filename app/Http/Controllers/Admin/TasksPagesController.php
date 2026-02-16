@@ -29,6 +29,11 @@ class TasksPagesController extends Controller
         return Inertia::render('Sessions/Dashboard/SuperAdmin/Tasks/Task');
     }
 
+    public function subTask(Request $request): Response
+    {
+        return Inertia::render('Sessions/Dashboard/SuperAdmin/Tasks/SubTask');
+    }
+
     public function planning(Request $request): Response
     {
         return Inertia::render('Sessions/Dashboard/SuperAdmin/Tasks/Planning');
