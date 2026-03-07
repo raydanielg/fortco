@@ -7,7 +7,7 @@ import home from 'react-useanimations/lib/home';
 import calendar from 'react-useanimations/lib/calendar';
 import checkmark from 'react-useanimations/lib/checkmark';
 import settings from 'react-useanimations/lib/settings';
-import { ArrowUpRightIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { ArrowUpRightIcon, EnvelopeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {

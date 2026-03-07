@@ -24,7 +24,7 @@ const applyTheme = (theme) => {
     }
 };
 
-const appName = import.meta.env.VITE_APP_NAME || 'Fortco Company Limited';
+const appName = 'Fortco Company Limited';
 
 createInertiaApp({
     title: (title) => title ? `${title} | Fortco Company Limited` : 'Fortco Company Limited',
