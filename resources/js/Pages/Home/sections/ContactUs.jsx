@@ -25,35 +25,35 @@ export default function ContactUs() {
                     </div>
 
                     <div className="grid gap-6 md:grid-cols-3 mb-10">
-                        <a
-                            href="mailto:hello@fortco.co.tz"
-                            className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900"
-                        >
-                            <div className="flex items-start gap-4">
-                                <span className="h-12 w-12 rounded-2xl bg-primary-50 text-primary-700 ring-1 ring-primary-100 flex items-center justify-center transition-transform group-hover:scale-105 dark:bg-gray-800 dark:text-primary-400 dark:ring-gray-700">
-                                    <EnvelopeIcon className="h-6 w-6" />
-                                </span>
-                                <div>
-                                    <p className="text-sm font-black text-slate-900 dark:text-white">Email</p>
-                                    <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">hello@fortco.co.tz</p>
+                            <a
+                                href="mailto:info@fortco.co.tz"
+                                className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900"
+                            >
+                                <div className="flex items-start gap-4">
+                                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 transition-colors group-hover:bg-primary-600 group-hover:text-white dark:bg-primary-900/30">
+                                        <EnvelopeIcon className="h-6 w-6" />
+                                    </span>
+                                    <div>
+                                        <p className="text-sm font-black text-slate-900 dark:text-white">Email</p>
+                                        <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">info@fortco.co.tz</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
 
-                        <a
-                            href="tel:+255700000000"
-                            className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900"
-                        >
-                            <div className="flex items-start gap-4">
-                                <span className="h-12 w-12 rounded-2xl bg-primary-50 text-primary-700 ring-1 ring-primary-100 flex items-center justify-center transition-transform group-hover:scale-105 dark:bg-gray-800 dark:text-primary-400 dark:ring-gray-700">
-                                    <PhoneIcon className="h-6 w-6" />
-                                </span>
-                                <div>
-                                    <p className="text-sm font-black text-slate-900 dark:text-white">Phone</p>
-                                    <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">+255 700 000 000</p>
+                            <a
+                                href="tel:+255746423472"
+                                className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900"
+                            >
+                                <div className="flex items-start gap-4">
+                                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-900/30">
+                                        <PhoneIcon className="h-6 w-6" />
+                                    </span>
+                                    <div>
+                                        <p className="text-sm font-black text-slate-900 dark:text-white">Phone</p>
+                                        <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">+255 746 423 472</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
 
                         <div className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900">
                             <div className="flex items-start gap-4">
@@ -115,11 +115,11 @@ export default function ContactUs() {
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-3 text-white font-semibold">
                                                 <EnvelopeIcon className="h-5 w-5 text-primary-300" />
-                                                <span>hello@fortco.co.tz</span>
+                                                <span>info@fortco.co.tz</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-white font-semibold">
                                                 <PhoneIcon className="h-5 w-5 text-primary-300" />
-                                                <span>+255 700 000 000</span>
+                                                <span>+255 746 423 472</span>
                                             </div>
                                             <div className="flex items-center gap-3 text-white font-semibold">
                                                 <MapPinIcon className="h-5 w-5 text-primary-300" />

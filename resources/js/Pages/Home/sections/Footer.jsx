@@ -31,15 +31,15 @@ export default function Footer() {
 
                         <div className="mt-6 space-y-3">
                             <a
-                                href="mailto:contact@fortco.co.tz"
+                                href="mailto:info@fortco.co.tz"
                                 className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
                             >
                                 <EnvelopeIcon className="h-4 w-4" />
-                                contact@fortco.co.tz
+                                info@fortco.co.tz
                             </a>
                             <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                                 <PhoneIcon className="h-4 w-4" />
-                                +255 700 000 000
+                                +255 746 423 472
                             </div>
                         </div>
                     </div>

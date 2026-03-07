@@ -28,17 +28,6 @@ export default function Header({ canLogin, canRegister }) {
 
     useEffect(() => {
         let canceled = false;
-        fetch('/api/front-settings/header')
-            .then((r) => r)
-            .then((r) => r)
-            .catch(() => {})
-        return () => {
-            canceled = true;
-        };
-    }, []);
-
-    useEffect(() => {
-        let canceled = false;
         fetch('/api/front-settings/header', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
             .then((r) => r.json())
             .then((data) => {
@@ -119,7 +108,6 @@ export default function Header({ canLogin, canRegister }) {
             ],
         },
         { name: t('nav.faq', 'FAQ'), href: '/#contact' },
-        { name: t('nav.login', 'Login'), href: route('login') },
     ];
 
     const navigation = useMemo(() => {
@@ -154,7 +142,7 @@ export default function Header({ canLogin, canRegister }) {
                                 >
                                     {available.map((code) => (
                                         <option key={code} value={code}>
-                                            {code.toUpperCase()}
+                                            {code === 'en' ? 'ENGLISH' : code === 'sw' ? 'SWAHILI' : code.toUpperCase()}
                                         </option>
                                     ))}
                                 </select>
@@ -255,7 +243,7 @@ export default function Header({ canLogin, canRegister }) {
                                     >
                                         {available.map((code) => (
                                             <option key={code} value={code}>
-                                                {code.toUpperCase()}
+                                                {code === 'en' ? 'ENGLISH' : code === 'sw' ? 'SWAHILI' : code.toUpperCase()}
                                             </option>
                                         ))}
                                     </select>
