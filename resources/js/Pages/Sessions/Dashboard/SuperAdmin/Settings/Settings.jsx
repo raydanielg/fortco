@@ -109,7 +109,7 @@ export default function Settings() {
         designation: employeeProfile.designation || '',
         phone: employeeProfile.phone || '',
         country: employeeProfile.country || '',
-        language: employeeProfile.language || '',
+        profile_language: employeeProfile.language || '',
         email: employeeProfile.email || '',
         password: '',
         payment_method: employeeProfile.payment?.payment_method || '',
@@ -988,8 +988,8 @@ export default function Settings() {
                                             <div>
                                                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Language</div>
                                                 <select
-                                                    value={data.language}
-                                                    onChange={(e) => setData('language', e.target.value)}
+                                                    value={data.profile_language}
+                                                    onChange={(e) => setData('profile_language', e.target.value)}
                                                     className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-[12px] text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                                                 >
                                                     <option value="">--</option>
