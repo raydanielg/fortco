@@ -20,8 +20,8 @@ use App\Http\Controllers\Admin\CompanyPartnersController;
 use App\Http\Controllers\Admin\CompanyCompaniesController;
 use App\Http\Controllers\Admin\TasksPagesController;
 use App\Http\Controllers\Admin\TasksDataController;
-use App\Http\Controllers\Admin\ReportsPagesController;
-use App\Http\Controllers\Admin\RealEstatePagesController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\RealEstatePropertiesController;
 use App\Http\Controllers\Admin\RealEstateBookingsController;
 use App\Http\Controllers\Admin\RealEstateClientsController;
@@ -429,6 +429,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('upload', [FrontSettingsController::class, 'upload'])->name('admin.front-settings.upload');
         });
         Route::get('faq', [AdminFaqController::class, 'index'])->name('admin.faq');
+
+        Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
         Route::get('role-permission', [RolePermissionController::class, 'index'])->name('admin.role-permission');
         Route::get('role-permission/data', [RolePermissionController::class, 'data'])->name('admin.role-permission.data');
