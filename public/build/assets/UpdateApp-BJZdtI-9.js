@@ -1,1 +1,0 @@
-import{j as e}from"./app-CZfkud9T.js";import t from"./SettingsSectionShell-D0qL--aA.js";function a(){return e.jsx(t,{title:"Update App",description:"Manage system updates, version checks, and maintenance operations.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{a as default};
