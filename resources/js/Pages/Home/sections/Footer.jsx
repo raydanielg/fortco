@@ -37,9 +37,15 @@ export default function Footer() {
                                 <EnvelopeIcon className="h-4 w-4" />
                                 info@fortco.co.tz
                             </a>
-                            <div className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                                 <PhoneIcon className="h-4 w-4" />
                                 +255 746 423 472
+                            </div>
+                            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                <MapPinIcon className="h-4 w-4" />
+                                <a href="https://www.google.com/search?q=Fortco+Company+Limited" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+                                    Mwanza, Tanzania
+                                </a>
                             </div>
                         </div>
                     </div>

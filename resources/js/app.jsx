@@ -27,7 +27,7 @@ const applyTheme = (theme) => {
 const appName = import.meta.env.VITE_APP_NAME || 'Fortco Company Limited';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title} | Fortco Company Limited`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

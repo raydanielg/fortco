@@ -56,15 +56,20 @@ export default function ContactUs() {
                             </a>
 
                         <div className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-700 dark:bg-gray-900">
-                            <div className="flex items-start gap-4">
+                            <a 
+                                href="https://www.google.com/search?q=Fortco+Company+Limited" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-start gap-4"
+                            >
                                 <span className="h-12 w-12 rounded-2xl bg-primary-50 text-primary-700 ring-1 ring-primary-100 flex items-center justify-center transition-transform group-hover:scale-105 dark:bg-gray-800 dark:text-primary-400 dark:ring-gray-700">
                                     <MapPinIcon className="h-6 w-6" />
                                 </span>
                                 <div>
                                     <p className="text-sm font-black text-slate-900 dark:text-white">Location</p>
-                                    <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">Dar es Salaam, Tanzania</p>
+                                    <p className="mt-1 text-sm font-semibold text-slate-600 dark:text-slate-300">Mwanza, Tanzania</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
 
@@ -90,7 +95,6 @@ export default function ContactUs() {
                                         <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Subject</label>
                                         <select className="w-full bg-slate-50 dark:bg-gray-800 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary-500">
                                             <option>General Inquiry</option>
-                                            <option>Demo Request</option>
                                             <option>Pricing Question</option>
                                             <option>Partnership</option>
                                         </select>
@@ -99,7 +103,18 @@ export default function ContactUs() {
                                         <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Message</label>
                                         <textarea rows="4" className="w-full bg-slate-50 dark:bg-gray-800 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary-500" placeholder="How can we help?"></textarea>
                                     </div>
-                                    <button className="w-full bg-slate-900 dark:bg-primary-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-200 dark:shadow-none hover:bg-slate-800 dark:hover:bg-primary-700 transition-all active:scale-[0.98]">
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            const name = document.querySelector('input[placeholder="John Doe"]')?.value || '';
+                                            const email = document.querySelector('input[placeholder="john@example.com"]')?.value || '';
+                                            const subject = document.querySelector('select')?.value || 'General Inquiry';
+                                            const message = document.querySelector('textarea')?.value || '';
+                                            const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0ASubject: ${subject}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+                                            window.location.href = `mailto:info@fortco.co.tz?subject=${encodeURIComponent(subject)}&body=${body}`;
+                                        }}
+                                        className="w-full bg-slate-900 dark:bg-primary-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-200 dark:shadow-none hover:bg-slate-800 dark:hover:bg-primary-700 transition-all active:scale-[0.98]"
+                                    >
                                         Send Message
                                     </button>
                                 </form>
@@ -123,7 +138,9 @@ export default function ContactUs() {
                                             </div>
                                             <div className="flex items-center gap-3 text-white font-semibold">
                                                 <MapPinIcon className="h-5 w-5 text-primary-300" />
-                                                <span>Dar es Salaam, Tanzania</span>
+                                                <a href="https://www.google.com/search?q=Fortco+Company+Limited" target="_blank" rel="noopener noreferrer" className="hover:text-primary-300 transition-colors">
+                                                    Mwanza, Tanzania
+                                                </a>
                                             </div>
                                             <div className="flex items-center gap-3 text-white font-semibold">
                                                 <ClockIcon className="h-5 w-5 text-primary-300" />
