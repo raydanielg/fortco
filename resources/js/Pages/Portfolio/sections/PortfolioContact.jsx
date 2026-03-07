@@ -17,7 +17,7 @@ export default function PortfolioContact() {
                         </span>
                         <div>
                             <div className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">Email</div>
-                            <div className="mt-1 text-sm font-black text-slate-900">projects@fortco.co.tz</div>
+                            <div className="mt-1 text-sm font-black text-slate-900">info@fortco.co.tz</div>
                         </div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@ export default function PortfolioContact() {
                             <UserCircleIcon className="mt-0.5 h-6 w-6 text-white/80" />
                             <div>
                                 <div className="text-xs font-extrabold uppercase tracking-widest text-white/70">Head of Projects</div>
-                                <div className="mt-1 text-sm font-black text-white">Eng. James Mwakyembe</div>
+                                <div className="mt-1 text-sm font-black text-white">Mr Cliff Tety</div>
                             </div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@ export default function PortfolioContact() {
                             <UserCircleIcon className="mt-0.5 h-6 w-6 text-white/80" />
                             <div>
                                 <div className="text-xs font-extrabold uppercase tracking-widest text-white/70">Portfolio Manager</div>
-                                <div className="mt-1 text-sm font-black text-white">Ms. Grace William</div>
+                                <div className="mt-1 text-sm font-black text-white">Mr Lilian Cliff</div>
                             </div>
                         </div>
                     </div>
@@ -71,16 +71,16 @@ export default function PortfolioContact() {
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                     <a
-                        href="mailto:technical@fortco.co.tz"
+                        href="mailto:info@fortco.co.tz"
                         className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-extrabold tracking-wide text-slate-900 shadow-sm transition hover:bg-slate-100"
                     >
-                        Technical inquiries → technical@fortco.co.tz
+                        Technical inquiries → info@fortco.co.tz
                     </a>
                     <a
-                        href="mailto:visits@fortco.co.tz"
+                        href="mailto:info@fortco.co.tz"
                         className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-extrabold tracking-wide text-slate-900 shadow-sm transition hover:bg-slate-100"
                     >
-                        Site visits → visits@fortco.co.tz
+                        Site visits → info@fortco.co.tz
                     </a>
                 </div>
 
