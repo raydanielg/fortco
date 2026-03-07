@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\CompanyCompaniesController;
 use App\Http\Controllers\Admin\TasksPagesController;
 use App\Http\Controllers\Admin\TasksDataController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\Admin\RealEstatePagesController;
+use App\Http\Controllers\Admin\ReportsPagesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\RealEstatePropertiesController;
 use App\Http\Controllers\Admin\RealEstateBookingsController;
