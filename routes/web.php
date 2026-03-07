@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
 Route::get('/', function () {
     return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
@@ -431,8 +433,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('upload', [FrontSettingsController::class, 'upload'])->name('admin.front-settings.upload');
         });
         Route::get('faq', [AdminFaqController::class, 'index'])->name('admin.faq');
-
-        Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
         Route::get('role-permission', [RolePermissionController::class, 'index'])->name('admin.role-permission');
         Route::get('role-permission/data', [RolePermissionController::class, 'data'])->name('admin.role-permission.data');
