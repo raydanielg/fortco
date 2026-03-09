@@ -19,10 +19,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call(FrontSettingsSeeder::class);
         $this->call(RolePermissionSeeder::class);
+        $this->call(SuperAdminSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if (app()->environment('local')) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
     }
 }
