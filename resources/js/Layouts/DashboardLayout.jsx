@@ -50,6 +50,7 @@ function IconLogout(props) {
 export default function DashboardLayout({ title, breadcrumbs = [], children }) {
     const page = usePage();
     const user = page.props.auth?.user;
+    const avatarUrl = page.props.auth?.avatar_url || '';
 
     const roles = page.props.auth?.roles || [];
     const isSuperAdmin = roles.includes('Super Admin');
@@ -175,12 +176,20 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
                                         {user?.email || ''}
                                     </div>
                                 </div>
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-[11px] font-bold text-white">
-                                    {(user?.name || 'U')
-                                        .trim()
-                                        .slice(0, 1)
-                                        .toUpperCase()}
-                                </div>
+                                {avatarUrl ? (
+                                    <img
+                                        src={avatarUrl}
+                                        alt="Avatar"
+                                        className="h-8 w-8 shrink-0 rounded-lg border border-slate-200 bg-white object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-[11px] font-bold text-white">
+                                        {(user?.name || 'U')
+                                            .trim()
+                                            .slice(0, 1)
+                                            .toUpperCase()}
+                                    </div>
+                                )}
                             </button>
 
                             {profileOpen && (
@@ -201,7 +210,7 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
 
                                     <div className="p-1">
                                         <Link
-                                            href={route('profile.edit')}
+                                            href={canAccessSettings ? route('admin.profile') : route('profile.edit')}
                                             className="block rounded-lg px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
                                             onClick={() => setProfileOpen(false)}
                                             role="menuitem"

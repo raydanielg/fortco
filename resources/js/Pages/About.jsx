@@ -17,6 +17,87 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function About({ canLogin, canRegister }) {
+    const seoTitle = "About Fortco Company Limited | Leading Construction & Real Estate Company in Tanzania";
+    const seoDescription = "Learn about Fortco Company Limited, Tanzania's premier construction and real estate management company based in Mwanza. Discover our mission, vision, values, and commitment to quality delivery across Tanzania.";
+    const seoKeywords = "About Fortco Company Limited, Construction Company Tanzania, Real Estate Company Mwanza, Building Company Tanzania, Construction Management, Property Development Tanzania, Fortco History, Tanzania Construction";
+    const siteUrl = window.location.origin;
+    const ogImage = `${siteUrl}/logo_new.png`;
+    const currentUrl = `${siteUrl}/about`;
+    
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": `${siteUrl}/#organization`,
+                "name": "Fortco Company Limited",
+                "alternateName": "Fortco",
+                "url": siteUrl,
+                "logo": {
+                    "@type": "ImageObject",
+                    "@id": `${siteUrl}/#logo`,
+                    "url": ogImage,
+                    "contentUrl": ogImage,
+                    "width": 512,
+                    "height": 512,
+                    "caption": "Fortco Company Limited Logo"
+                },
+                "description": seoDescription,
+                "foundingDate": "2016",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Mwanza",
+                    "addressCountry": "Tanzania"
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+255746423472",
+                    "email": "info@fortco.co.tz",
+                    "contactType": "customer service"
+                },
+                "sameAs": [
+                    `${siteUrl}/services`,
+                    `${siteUrl}/portfolio`,
+                    `${siteUrl}/properties`
+                ]
+            },
+            {
+                "@type": "WebPage",
+                "@id": `${currentUrl}/#webpage`,
+                "url": currentUrl,
+                "name": seoTitle,
+                "isPartOf": {
+                    "@id": `${siteUrl}/#website`
+                },
+                "about": {
+                    "@id": `${siteUrl}/#organization`
+                },
+                "description": seoDescription,
+                "breadcrumb": {
+                    "@id": `${currentUrl}/#breadcrumb`
+                },
+                "inLanguage": "en-US"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "@id": `${currentUrl}/#breadcrumb`,
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": siteUrl
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "About",
+                        "item": currentUrl
+                    }
+                ]
+            }
+        ]
+    };
     const values = [
         {
             title: 'Quality-first delivery',
@@ -54,7 +135,47 @@ export default function About({ canLogin, canRegister }) {
 
     return (
         <>
-            <Head title="About" />
+            <Head>
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDescription} />
+                <meta name="keywords" content={seoKeywords} />
+                <meta name="author" content="Fortco Company Limited" />
+                <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+                <link rel="canonical" href={currentUrl} />
+                
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta property="og:title" content={seoTitle} />
+                <meta property="og:description" content={seoDescription} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content="512" />
+                <meta property="og:image:height" content="512" />
+                <meta property="og:image:alt" content="Fortco Company Limited Logo" />
+                <meta property="og:site_name" content="Fortco Company Limited" />
+                <meta property="og:locale" content="en_US" />
+
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta name="twitter:title" content={seoTitle} />
+                <meta name="twitter:description" content={seoDescription} />
+                <meta name="twitter:image" content={ogImage} />
+                <meta name="twitter:image:alt" content="Fortco Company Limited Logo" />
+                <meta name="twitter:site" content="@FortcoTZ" />
+                <meta name="twitter:creator" content="@FortcoTZ" />
+                
+                {/* Additional SEO Meta Tags */}
+                <meta name="geo.region" content="TZ-26" />
+                <meta name="geo.placename" content="Mwanza, Tanzania" />
+                <meta name="geo.position" content="-2.5164;32.9175" />
+                <meta name="ICBM" content="-2.5164, 32.9175" />
+                
+                {/* Structured Data */}
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            </Head>
             <div className="min-h-screen bg-white text-slate-900">
                 <Header canLogin={canLogin} canRegister={canRegister} />
 

@@ -202,6 +202,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::prefix('admin')->group(function () {
+        Route::get('profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'index'])->name('admin.profile');
         Route::get('dashboard/metrics', [DashboardController::class, 'metrics'])->name('admin.dashboard.metrics');
 
         Route::get('analytics', [DashboardController::class, 'analytics'])->name('admin.analytics');

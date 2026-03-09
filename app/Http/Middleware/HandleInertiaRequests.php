@@ -32,6 +32,12 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
+        $avatarUrl = '';
+        try {
+            $avatarUrl = $user?->employee?->getFirstMediaUrl('avatar') ?: '';
+        } catch (\Throwable $e) {
+            $avatarUrl = '';
+        }
 
         $locale = app()->getLocale();
         $available = ['en', 'sw'];
@@ -55,6 +61,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $user,
+                'avatar_url' => $avatarUrl,
                 'roles' => $user ? $user->getRoleNames() : [],
                 'permissions' => $user ? $user->getAllPermissions()->pluck('name') : [],
             ],

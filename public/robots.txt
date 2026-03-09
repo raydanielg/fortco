@@ -1,8 +1,52 @@
+# Robots.txt for Fortco Company Limited
+# https://fortco.co.tz/robots.txt
+
+# Allow all crawlers to access public content
 User-agent: *
 Allow: /
+Allow: /about
+Allow: /services
+Allow: /portfolio
+Allow: /properties
+Allow: /gallery
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.webp
+Allow: *.svg
+Allow: /logo_new.png
+Allow: /favicon_new.png
+
+# Disallow private/admin areas
 Disallow: /login
 Disallow: /register
-Disallow: /admin
-Disallow: /security
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /security/
+Disallow: /api/
+Disallow: /helpdesk/
+Disallow: /support/
+Disallow: /webhooks/
+Disallow: /banned
+Disallow: /maintenance
 
-Sitemap: /sitemap.xml
+# Disallow temporary/cache files
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.env
+Disallow: /composer.json
+Disallow: /package.json
+Disallow: /webpack.mix.js
+Disallow: /vite.config.js
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://fortco.co.tz/sitemap.xml

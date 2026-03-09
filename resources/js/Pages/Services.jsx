@@ -22,6 +22,105 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function Services({ canLogin, canRegister }) {
+    const seoTitle = "Services | Fortco Company Limited - Construction & Real Estate Services Tanzania";
+    const seoDescription = "Explore Fortco Company Limited's comprehensive construction and real estate services in Tanzania. We offer property management, construction tracking, project development, and loan processing services across Mwanza and Tanzania.";
+    const seoKeywords = "Fortco Services, Construction Services Tanzania, Real Estate Services Mwanza, Property Management Tanzania, Construction Tracking, Project Development, Building Services Tanzania, Property Development Mwanza";
+    const siteUrl = window.location.origin;
+    const ogImage = `${siteUrl}/logo_new.png`;
+    const currentUrl = `${siteUrl}/services`;
+    
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": `${siteUrl}/#organization`,
+                "name": "Fortco Company Limited",
+                "url": siteUrl,
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": ogImage,
+                    "width": 512,
+                    "height": 512
+                },
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Mwanza",
+                    "addressCountry": "Tanzania"
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+255746423472",
+                    "email": "info@fortco.co.tz",
+                    "contactType": "customer service"
+                }
+            },
+            {
+                "@type": "Service",
+                "@id": `${siteUrl}/services/#construction`,
+                "name": "Construction Management",
+                "description": "Comprehensive construction project management and tracking services",
+                "provider": {
+                    "@id": `${siteUrl}/#organization`
+                },
+                "serviceType": "Construction Management",
+                "areaServed": {
+                    "@type": "Country",
+                    "name": "Tanzania"
+                }
+            },
+            {
+                "@type": "Service",
+                "@id": `${siteUrl}/services/#realestate`,
+                "name": "Real Estate Management",
+                "description": "Property management and real estate development services",
+                "provider": {
+                    "@id": `${siteUrl}/#organization`
+                },
+                "serviceType": "Real Estate Management",
+                "areaServed": {
+                    "@type": "Country",
+                    "name": "Tanzania"
+                }
+            },
+            {
+                "@type": "WebPage",
+                "@id": `${currentUrl}/#webpage`,
+                "url": currentUrl,
+                "name": seoTitle,
+                "isPartOf": {
+                    "@id": `${siteUrl}/#website`
+                },
+                "about": {
+                    "@id": `${siteUrl}/#organization`
+                },
+                "description": seoDescription,
+                "breadcrumb": {
+                    "@id": `${currentUrl}/#breadcrumb`
+                },
+                "inLanguage": "en-US"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "@id": `${currentUrl}/#breadcrumb`,
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": siteUrl
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Services",
+                        "item": currentUrl
+                    }
+                ]
+            }
+        ]
+    };
+
     const services = [
         {
             id: 'construction',
@@ -67,7 +166,47 @@ export default function Services({ canLogin, canRegister }) {
 
     return (
         <>
-            <Head title="Services" />
+            <Head>
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDescription} />
+                <meta name="keywords" content={seoKeywords} />
+                <meta name="author" content="Fortco Company Limited" />
+                <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+                <link rel="canonical" href={currentUrl} />
+                
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={currentUrl} />
+                <meta property="og:title" content={seoTitle} />
+                <meta property="og:description" content={seoDescription} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content="512" />
+                <meta property="og:image:height" content="512" />
+                <meta property="og:image:alt" content="Fortco Company Limited Logo" />
+                <meta property="og:site_name" content="Fortco Company Limited" />
+                <meta property="og:locale" content="en_US" />
+
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:url" content={currentUrl} />
+                <meta name="twitter:title" content={seoTitle} />
+                <meta name="twitter:description" content={seoDescription} />
+                <meta name="twitter:image" content={ogImage} />
+                <meta name="twitter:image:alt" content="Fortco Company Limited Logo" />
+                <meta name="twitter:site" content="@FortcoTZ" />
+                <meta name="twitter:creator" content="@FortcoTZ" />
+                
+                {/* Additional SEO Meta Tags */}
+                <meta name="geo.region" content="TZ-26" />
+                <meta name="geo.placename" content="Mwanza, Tanzania" />
+                <meta name="geo.position" content="-2.5164;32.9175" />
+                <meta name="ICBM" content="-2.5164, 32.9175" />
+                
+                {/* Structured Data */}
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            </Head>
             <div className="min-h-screen bg-white text-slate-900">
                 <Header canLogin={canLogin} canRegister={canRegister} />
 
