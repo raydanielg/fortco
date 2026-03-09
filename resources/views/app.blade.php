@@ -6,10 +6,10 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- SEO Meta Tags -->
-        {!! SEOMeta::generate() !!}
-        {!! OpenGraph::generate() !!}
-        {!! TwitterCard::generate() !!}
-        {!! JsonLd::generate() !!}
+        {!! \Artesaos\SEOTools\Facades\SEOMeta::generate() !!}
+        {!! \Artesaos\SEOTools\Facades\OpenGraph::generate() !!}
+        {!! \Artesaos\SEOTools\Facades\TwitterCard::generate() !!}
+        {!! \Artesaos\SEOTools\Facades\JsonLd::generate() !!}
 
         <title inertia>{{ config('app.name', 'FortCo ERP') }}</title>
 
