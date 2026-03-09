@@ -50,8 +50,7 @@ class SeoService
      */
     public function addOrganizationSchema()
     {
-        JsonLd::addValue('@context', 'https://schema.org');
-        JsonLd::addValue('@type', 'Organization');
+        JsonLd::setType('Organization');
         JsonLd::addValue('name', 'FortCo ERP');
         JsonLd::addValue('alternateName', 'FortCo Construction Management System');
         JsonLd::addValue('description', 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for project management in East Africa.');
@@ -96,14 +95,9 @@ class SeoService
      */
     public function addFaqSchema($faqs)
     {
-        $faqData = [
-            '@context' => 'https://schema.org',
-            '@type' => 'FAQPage',
-            'mainEntity' => []
-        ];
-        
+        $mainEntity = [];
         foreach ($faqs as $faq) {
-            $faqData['mainEntity'][] = [
+            $mainEntity[] = [
                 '@type' => 'Question',
                 'name' => $faq['question'],
                 'acceptedAnswer' => [
@@ -113,7 +107,8 @@ class SeoService
             ];
         }
         
-        JsonLd::addValue($faqData);
+        JsonLd::setType('FAQPage');
+        JsonLd::addValue('mainEntity', $mainEntity);
     }
     
     /**
@@ -121,9 +116,9 @@ class SeoService
      */
     public function addReviewSchema($reviews, $aggregateRating = null)
     {
+        JsonLd::setType('Organization');
+        
         if ($aggregateRating) {
-            JsonLd::addValue('@context', 'https://schema.org');
-            JsonLd::addValue('@type', 'Organization');
             JsonLd::addValue('aggregateRating', [
                 '@type' => 'AggregateRating',
                 'ratingValue' => $aggregateRating['rating'],
@@ -162,14 +157,9 @@ class SeoService
      */
     public function addBreadcrumbSchema($breadcrumbs)
     {
-        $breadcrumbData = [
-            '@context' => 'https://schema.org',
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => []
-        ];
-        
+        $itemListElement = [];
         foreach ($breadcrumbs as $index => $breadcrumb) {
-            $breadcrumbData['itemListElement'][] = [
+            $itemListElement[] = [
                 '@type' => 'ListItem',
                 'position' => $index + 1,
                 'name' => $breadcrumb['name'],
@@ -177,7 +167,8 @@ class SeoService
             ];
         }
         
-        JsonLd::addValue($breadcrumbData);
+        JsonLd::setType('BreadcrumbList');
+        JsonLd::addValue('itemListElement', $itemListElement);
     }
     
     /**
@@ -185,8 +176,7 @@ class SeoService
      */
     public function addServiceSchema($service)
     {
-        JsonLd::addValue('@context', 'https://schema.org');
-        JsonLd::addValue('@type', 'Service');
+        JsonLd::setType('Service');
         JsonLd::addValue('name', $service['name']);
         JsonLd::addValue('description', $service['description']);
         JsonLd::addValue('provider', [
