@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import AnimatedIcon from '@/Components/AnimatedIcon';
 import activity from 'react-useanimations/lib/activity';
@@ -415,14 +415,18 @@ function IconShield(props) {
 export default function Sidebar({
     title,
     userName,
-    isSuperAdmin = false,
-    canUserManagement = false,
     isOpen,
     onClose,
 }) {
+    const { auth } = usePage().props;
     const [query, setQuery] = useState('');
 
     const menu = useMemo(() => {
+        const roleNames = Array.isArray(auth.user.roles) 
+            ? auth.user.roles.map(r => typeof r === 'string' ? r : r.name)
+            : [];
+        const isSuperAdmin = roleNames.includes('Super Admin') || auth.user.is_super_admin;
+
         if (!isSuperAdmin) {
             const items = [
                 {

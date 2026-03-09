@@ -11,7 +11,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
-    const isSuperAdmin = user.roles && user.roles.includes('Super Admin');
+    const isSuperAdmin = user.roles && (user.roles.includes('Super Admin') || user.roles.some(r => r.name === 'Super Admin'));
 
     return (
         <div className="min-h-screen bg-gray-100">
