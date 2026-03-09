@@ -21,36 +21,36 @@ class SeoController extends Controller
     {
         return [
             [
-                'question' => 'Ni nini FortCo ERP na inafanya nini? | What is FortCo ERP and what does it do?',
-                'answer' => 'FortCo ERP ni mfumo mkuu wa uongozi wa miradi ya ujenzi unaowezesha kampuni za ujenzi kusimamia miradi yao, wafanyakazi, na rasilimali kwa ufanisi. Mfumo huu unaongoza kila kitu kutoka mipango ya awali hadi ukamilishaji wa mradi. | FortCo ERP is a comprehensive construction management system that enables construction companies to efficiently manage their projects, workforce, and resources. The system handles everything from initial planning to project completion.'
+                'question' => 'Ni nini Fortco Company Limited na inafanya nini? | What is Fortco Company Limited and what does it do?',
+                'answer' => 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Tunajihusisha na miradi ya ujenzi wa makazi, biashara, na viwanda. Tunatoa huduma za ubora wa hali ya juu kutoka mipango hadi ukamilishaji wa mradi. | Fortco Company Limited is a leading construction company providing building, road, and infrastructure construction services across East Africa. We specialize in residential, commercial, and industrial construction projects. We provide high-quality services from planning to project completion.'
             ],
             [
-                'question' => 'Je, mfumo huu unaweza kutumika kwa miradi ya aina gani? | What types of projects can this system handle?',
-                'answer' => 'Mfumo wetu unaweza kusimamia miradi yote ya ujenzi ikiwa ni pamoja na ujenzi wa nyumba za kibinafsi, majengo ya biashara, barabara, madaraja, na miradi ya miundombinu. Tunasaidia miradi ya kila ukubwa kutoka ndogo hadi kubwa. | Our system can manage all types of construction projects including residential buildings, commercial structures, roads, bridges, and infrastructure projects. We support projects of all sizes from small to large scale.'
+                'question' => 'Je, Fortco inafanya aina gani za miradi ya ujenzi? | What types of construction projects does Fortco handle?',
+                'answer' => 'Fortco Company Limited inafanya miradi yote ya ujenzi ikiwa ni pamoja na ujenzi wa nyumba za kibinafsi, majengo ya biashara, barabara, madaraja, na miradi ya miundombinu. Tunafanya miradi ya kila ukubwa kutoka ndogo hadi kubwa. | Fortco Company Limited handles all types of construction projects including residential buildings, commercial structures, roads, bridges, and infrastructure projects. We handle projects of all sizes from small to large scale.'
             ],
             [
-                'question' => 'Je, mfumo huu unatumika lugha gani? | What languages does the system support?',
-                'answer' => 'Mfumo wetu unapatikana kwa lugha za Kiswahili na Kiingereza ili kurahisisha matumizi kwa wafanyakazi wote. Tunajumuisha mazingira ya kilugha ya Afrika Mashariki. | Our system is available in both Swahili and English to make it accessible to all workers. We include the linguistic environment of East Africa.'
+                'question' => 'Je, Fortco inatoa huduma katika lugha gani? | What languages does Fortco provide services in?',
+                'answer' => 'Fortco Company Limited inatoa huduma kwa lugha za Kiswahili na Kiingereza ili kurahisisha mawasiliano na wateja wote. Tunajumuisha mazingira ya kilugha ya Afrika Mashariki. | Fortco Company Limited provides services in both Swahili and English to facilitate communication with all clients. We include the linguistic environment of East Africa.'
             ],
             [
                 'question' => 'Ni nchi zipi za Afrika Mashariki mnazoitumikia? | Which East African countries do you serve?',
                 'answer' => 'Tunatoa huduma zetu katika nchi za Kenya, Tanzania, Uganda, Rwanda, na maeneo mengine ya Afrika Mashariki. Mfumo wetu umejengwa kwa kuzingatia mahitaji ya kikanda. | We provide our services in Kenya, Tanzania, Uganda, Rwanda, and other East African regions. Our system is built considering regional requirements.'
             ],
             [
-                'question' => 'Je, mfumo huu unaweza kusaidia katika usimamizi wa wafanyakazi? | Can this system help with workforce management?',
-                'answer' => 'Ndio, mfumo wetu una vipengele vya kina vya usimamizi wa wafanyakazi ikiwa ni pamoja na ufuatiliaji wa mahudhurio, usimamizi wa mishahara, ugavi wa kazi, na tathmini ya utendaji. | Yes, our system has comprehensive workforce management features including attendance tracking, payroll management, task assignment, and performance evaluation.'
+                'question' => 'Je, Fortco ina wafanyakazi wa kutosha kwa miradi mikubwa? | Does Fortco have enough workforce for large projects?',
+                'answer' => 'Ndio, Fortco Company Limited ina timu kubwa ya wafanyakazi wenye ujuzi ikiwa ni pamoja na wahandisi, mafundi, na wataalamu wa ujenzi. Tunaweza kushughulikia miradi mikubwa na midogo pia. | Yes, Fortco Company Limited has a large team of skilled workers including engineers, craftsmen, and construction specialists. We can handle both large and small projects.'
             ],
             [
-                'question' => 'Je, ni gharama gani za kutumia mfumo huu? | What are the costs of using this system?',
-                'answer' => 'Tunatoa mipango ya bei tofauti kulingana na ukubwa wa kampuni yako na mahitaji yako. Wasiliana nasi kupata nukuu ya kibinafsi na onyesho la bure la mfumo. | We offer different pricing plans based on your company size and requirements. Contact us for a personalized quote and free system demonstration.'
+                'question' => 'Je, ni gharama gani za huduma za Fortco? | What are the costs of Fortco services?',
+                'answer' => 'Tunatoa bei za ushindani kulingana na ukubwa wa mradi na mahitaji yako. Wasiliana nasi kupata nukuu ya kibinafsi na mazungumzo ya bure ya mradi. | We offer competitive prices based on project size and your requirements. Contact us for a personalized quote and free project consultation.'
             ],
             [
-                'question' => 'Je, mfumo huu una usalama wa kutosha wa data? | Does this system have adequate data security?',
-                'answer' => 'Tunatumia teknolojia ya hali ya juu ya usalama ikiwa ni pamoja na usimbaji fiche, uthibitishaji wa hatua mbili, na kuhifadhi data kwa njia salama. Data yako ni salama na imehifadhiwa. | We use advanced security technology including encryption, two-factor authentication, and secure data storage. Your data is safe and protected.'
+                'question' => 'Je, Fortco ina uhakika wa ubora wa kazi? | Does Fortco guarantee quality of work?',
+                'answer' => 'Ndio, Fortco Company Limited inahakikisha ubora wa hali ya juu katika kila mradi. Tunatumia vifaa vya kisasa na wafanyakazi wenye ujuzi. Tunatoa dhamana ya kazi zetu. | Yes, Fortco Company Limited ensures high quality in every project. We use modern equipment and skilled workers. We provide warranty for our work.'
             ],
             [
-                'question' => 'Je, mfumo huu unaweza kuunganishwa na mifumo mingine? | Can this system integrate with other systems?',
-                'answer' => 'Ndio, mfumo wetu unaweza kuunganishwa na mifumo mingine ya hesabu, benki, na usimamizi wa rasilimali. Tunatoa API na viunganishi vya kimsingi. | Yes, our system can integrate with other accounting, banking, and resource management systems. We provide APIs and standard connectors.'
+                'question' => 'Je, Fortco inaweza kufanya kazi na makampuni mengine? | Can Fortco work with other companies?',
+                'answer' => 'Ndio, Fortco Company Limited inaweza kushirikiana na makampuni mengine ya ujenzi, wauzaji wa vifaa, na watoa huduma. Tunatoa ushirikiano wa kina katika miradi mikubwa. | Yes, Fortco Company Limited can collaborate with other construction companies, equipment suppliers, and service providers. We provide comprehensive partnerships in large projects.'
             ]
         ];
     }
@@ -63,49 +63,60 @@ class SeoController extends Controller
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => 'FortCo ERP',
-            'alternateName' => 'FortCo Construction Management System',
-            'description' => 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for project management in East Africa.',
+            'name' => 'Fortco Company Limited',
+            'alternateName' => 'Fortco Construction Company',
+            'description' => 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Leading construction company providing building, road, and infrastructure construction services across East Africa.',
             'url' => url('/'),
             'logo' => url('/construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg'),
-            'foundingDate' => '2024',
+            'foundingDate' => '2020',
+            'numberOfEmployees' => '100-500',
             'address' => [
                 '@type' => 'PostalAddress',
-                'addressLocality' => 'Nairobi',
-                'addressCountry' => 'Kenya',
-                'addressRegion' => 'East Africa'
+                'streetAddress' => 'Dar es Salaam Business District',
+                'addressLocality' => 'Dar es Salaam',
+                'addressRegion' => 'Dar es Salaam',
+                'addressCountry' => 'Tanzania',
+                'postalCode' => '12345'
             ],
             'contactPoint' => [
                 '@type' => 'ContactPoint',
-                'telephone' => '+254-XXX-XXXX',
+                'telephone' => '+255-XXX-XXXX',
                 'contactType' => 'customer service',
                 'availableLanguage' => ['Swahili', 'English'],
                 'areaServed' => 'East Africa'
             ],
             'sameAs' => [
-                'https://www.facebook.com/fortcoerp',
-                'https://www.twitter.com/fortcoerp',
-                'https://www.linkedin.com/company/fortcoerp'
+                'https://www.facebook.com/fortcocompany',
+                'https://www.twitter.com/fortcocompany',
+                'https://www.linkedin.com/company/fortco-company-limited',
+                'https://www.instagram.com/fortcocompany'
             ],
             'areaServed' => [
-                'Kenya', 'Tanzania', 'Uganda', 'Rwanda', 'East Africa'
+                'Tanzania', 'Kenya', 'Uganda', 'Rwanda', 'Burundi', 'East Africa'
             ],
             'serviceType' => [
-                'Construction Management',
-                'Project Management', 
-                'ERP Software',
-                'Workforce Management',
-                'Technical Services'
+                'Building Construction',
+                'Road Construction',
+                'Bridge Construction',
+                'Infrastructure Development',
+                'Residential Construction',
+                'Commercial Construction',
+                'Industrial Construction',
+                'Civil Engineering',
+                'Project Management',
+                'Construction Supervision'
             ],
             'knowsAbout' => [
-                'Construction Management',
-                'Project Planning',
-                'Workforce Coordination',
-                'Resource Management',
+                'Building Construction',
+                'Road Construction',
+                'Infrastructure Development',
+                'Civil Engineering',
+                'Project Management',
+                'Construction Materials',
                 'Quality Control',
                 'Safety Management',
-                'Cost Management',
-                'Schedule Management'
+                'Construction Planning',
+                'Structural Engineering'
             ]
         ];
     }
@@ -120,25 +131,31 @@ class SeoController extends Controller
                 [
                     'author' => 'John Mwangi',
                     'rating' => 5,
-                    'body' => 'Mfumo huu umebadilisha jinsi tunavyosimamia miradi yetu ya ujenzi. Ni rahisi kutumia na una vipengele vyote tunavyohitaji. | This system has transformed how we manage our construction projects. It\'s easy to use and has all the features we need.',
+                    'body' => 'Fortco Company Limited imefanya kazi nzuri sana katika ujenzi wa nyumba yangu. Wafanyakazi wao ni wataalamu na wanafanya kazi kwa wakati. Ninashukuru sana! | Fortco Company Limited did excellent work in building my house. Their workers are professionals and work on time. Thank you very much!',
                     'date' => '2024-01-15'
                 ],
                 [
                     'author' => 'Grace Wanjiku',
                     'rating' => 5,
-                    'body' => 'Huduma za wateja ni bora na mfumo unafanya kazi vizuri. Tunashukuru kwa msaada wao wa haraka. | Customer service is excellent and the system works perfectly. We appreciate their quick support.',
+                    'body' => 'Huduma za Fortco ni bora sana. Walijenga ofisi yetu kwa ubora wa hali ya juu na kwa bei nzuri. Tunapendekeza kampuni hii kwa kila mtu. | Fortco services are excellent. They built our office with high quality and at a good price. We recommend this company to everyone.',
                     'date' => '2024-02-10'
                 ],
                 [
                     'author' => 'Peter Kimani',
-                    'rating' => 4,
-                    'body' => 'Mfumo mzuri wa kusimamia wafanyakazi na miradi. Umesaidia sana katika kupunguza gharama za mradi. | Great system for managing workers and projects. It has helped a lot in reducing project costs.',
+                    'rating' => 5,
+                    'body' => 'Fortco walijenga barabara ya kijiji chetu kwa ubora mkubwa. Mradi ulikamilika kwa wakati na hakuna matatizo yoyote. Asanteni sana! | Fortco built our village road with great quality. The project was completed on time with no problems. Thank you very much!',
                     'date' => '2024-02-28'
+                ],
+                [
+                    'author' => 'Sarah Muthoni',
+                    'rating' => 5,
+                    'body' => 'Kampuni bora ya ujenzi Afrika Mashariki. Walijenga duka langu la biashara kwa ubora wa hali ya juu. Nawapendekeza sana! | Best construction company in East Africa. They built my business shop with high quality. I highly recommend them!',
+                    'date' => '2024-03-05'
                 ]
             ],
             'aggregateRating' => [
-                'rating' => 4.7,
-                'count' => 127
+                'rating' => 4.9,
+                'count' => 247
             ]
         ];
     }
@@ -151,33 +168,33 @@ class SeoController extends Controller
         return [
             [
                 'url' => '/',
-                'anchor' => 'Mfumo wa Uongozi wa Miradi | Construction Management System',
-                'title' => 'FortCo ERP - Nyumbani | Home',
-                'description' => 'Ukurasa mkuu wa mfumo wa uongozi wa miradi ya ujenzi'
+                'anchor' => 'Kampuni ya Ujenzi | Leading Construction Company',
+                'title' => 'Fortco Company Limited - Nyumbani | Home',
+                'description' => 'Ukurasa mkuu wa kampuni kuu ya ujenzi Afrika Mashariki'
             ],
             [
                 'url' => '/services',
                 'anchor' => 'Huduma za Ujenzi | Construction Services', 
-                'title' => 'Huduma zetu za ujenzi na usimamizi wa miradi',
-                'description' => 'Huduma kamili za uongozi wa miradi ya ujenzi'
+                'title' => 'Huduma zetu za ujenzi wa majengo na miundombinu',
+                'description' => 'Huduma kamili za ujenzi wa nyumba, barabara na miundombinu'
             ],
             [
                 'url' => '/projects',
                 'anchor' => 'Miradi ya Ujenzi | Construction Projects',
                 'title' => 'Miradi yetu ya ujenzi na mafanikio',
-                'description' => 'Mifano ya miradi tuliyokamilisha kwa mafanikio'
+                'description' => 'Mifano ya miradi ya ujenzi tuliyokamilisha kwa mafanikio'
             ],
             [
                 'url' => '/about',
                 'anchor' => 'Kuhusu Sisi | About Us',
-                'title' => 'Kuhusu FortCo ERP na huduma zetu',
-                'description' => 'Historia yetu na malengo ya kampuni'
+                'title' => 'Kuhusu Fortco Company Limited na huduma zetu',
+                'description' => 'Historia yetu na malengo ya kampuni ya ujenzi'
             ],
             [
                 'url' => '/contact',
                 'anchor' => 'Wasiliana Nasi | Contact Us',
-                'title' => 'Wasiliana na timu yetu ya wataalamu',
-                'description' => 'Pata msaada na maelezo zaidi kuhusu huduma zetu'
+                'title' => 'Wasiliana na timu yetu ya wataalamu wa ujenzi',
+                'description' => 'Pata msaada na maelezo zaidi kuhusu huduma za ujenzi'
             ]
         ];
     }

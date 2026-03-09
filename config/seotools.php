@@ -10,27 +10,32 @@ return [
          * The default configurations to be used by the meta generator.
          */
         'defaults'       => [
-            'title'        => "FortCo ERP - Mfumo wa Uongozi wa Miradi ya Ujenzi | Construction Management System", // set false to total remove
+            'title'        => "Fortco Company Limited - Kampuni ya Ujenzi | Leading Construction Company in East Africa", // set false to total remove
             'titleBefore'  => false, // Put defaults.title before page title, like 'It's Over 9000! - Dashboard'
-            'description'  => 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for project management, workforce coordination, and technical services in East Africa.', // set false to total remove
+            'description'  => 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Tunatoa huduma za ubora wa hali ya juu kwa miradi yote ya ujenzi. Leading construction company providing building, road, and infrastructure construction services across East Africa.', // set false to total remove
             'separator'    => ' | ',
             'keywords'     => [
-                // Swahili Keywords
-                'mfumo wa uongozi wa miradi', 'ujenzi wa nyumba', 'usimamizi wa mradi', 'huduma za ujenzi',
-                'wafanyakazi wa ujenzi', 'vifaa vya ujenzi', 'uongozi wa kampuni', 'miradi ya ujenzi',
-                'ujenzi wa majengo', 'huduma za kiufundi', 'uongozi wa biashara', 'mipango ya ujenzi',
-                'ujenzi wa barabara', 'viwanda vya ujenzi', 'teknolojia ya ujenzi', 'uongozi wa rasilimali',
+                // Swahili Keywords - Construction Focus
+                'kampuni ya ujenzi', 'ujenzi wa nyumba', 'ujenzi wa majengo', 'huduma za ujenzi',
+                'wafanyakazi wa ujenzi', 'vifaa vya ujenzi', 'miradi ya ujenzi', 'ujenzi wa barabara',
+                'ujenzi wa daraja', 'ujenzi wa makazi', 'ujenzi wa ofisi', 'ujenzi wa duka',
+                'ujenzi wa shule', 'ujenzi wa hospitali', 'ujenzi wa kiwanda', 'mipango ya ujenzi',
+                'uongozi wa miradi', 'usimamizi wa ujenzi', 'huduma za kiufundi', 'teknolojia ya ujenzi',
+                'viwanda vya ujenzi', 'makontrakta wa ujenzi', 'injinia wa ujenzi', 'foreman wa ujenzi',
                 
-                // English Keywords  
-                'construction management system', 'ERP software', 'project management', 'construction ERP',
-                'building construction', 'construction services', 'workforce management', 'construction technology',
-                'project coordination', 'construction planning', 'building management', 'construction company',
-                'infrastructure development', 'construction projects', 'technical services', 'business management',
+                // English Keywords - Construction Company Focus
+                'construction company', 'building construction', 'construction services', 'construction contractor',
+                'building contractor', 'construction projects', 'infrastructure construction', 'road construction',
+                'bridge construction', 'residential construction', 'commercial construction', 'industrial construction',
+                'construction management', 'project management', 'construction planning', 'building services',
+                'construction technology', 'construction equipment', 'construction materials', 'construction workers',
+                'civil engineering', 'structural engineering', 'construction supervision', 'quality construction',
                 
                 // Location-based Keywords
                 'ujenzi Kenya', 'construction Tanzania', 'ujenzi Uganda', 'construction East Africa',
                 'building contractors Kenya', 'construction companies Tanzania', 'ujenzi Nairobi',
-                'construction Dar es Salaam', 'building services Kampala'
+                'construction Dar es Salaam', 'building services Kampala', 'ujenzi Mombasa',
+                'construction Arusha', 'ujenzi Dodoma', 'construction Kampala', 'building contractors East Africa'
             ],
             'canonical'    => 'current', // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
             'robots'       => 'index,follow', // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
@@ -54,11 +59,11 @@ return [
          * The default configurations to be used by the opengraph generator.
          */
         'defaults' => [
-            'title'       => 'FortCo ERP - Mfumo wa Uongozi wa Miradi ya Ujenzi', // set false to total remove
-            'description' => 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for East Africa.', // set false to total remove
+            'title'       => 'Fortco Company Limited - Kampuni ya Ujenzi', // set false to total remove
+            'description' => 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Leading construction company in East Africa providing quality building and infrastructure services.', // set false to total remove
             'url'         => null, // Set null for using Url::current(), set false to total remove
             'type'        => 'website',
-            'site_name'   => 'FortCo ERP',
+            'site_name'   => 'Fortco Company Limited',
             'images'      => ['/construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg'],
         ],
     ],
@@ -68,8 +73,8 @@ return [
          */
         'defaults' => [
             'card'        => 'summary_large_image',
-            'site'        => '@FortCoERP',
-            'creator'     => '@FortCoERP',
+            'site'        => '@FortcoCompany',
+            'creator'     => '@FortcoCompany',
         ],
     ],
     'json-ld' => [
@@ -77,8 +82,8 @@ return [
          * The default configurations to be used by the json-ld generator.
          */
         'defaults' => [
-            'title'       => 'FortCo ERP - Mfumo wa Uongozi wa Miradi ya Ujenzi', // set false to total remove
-            'description' => 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for East Africa.', // set false to total remove
+            'title'       => 'Fortco Company Limited - Kampuni ya Ujenzi', // set false to total remove
+            'description' => 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Leading construction company in East Africa providing quality building and infrastructure services.', // set false to total remove
             'url'         => 'current', // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
             'type'        => 'WebPage',
             'images'      => ['/construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg'],

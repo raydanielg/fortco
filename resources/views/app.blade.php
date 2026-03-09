@@ -11,7 +11,7 @@
         {!! \Artesaos\SEOTools\Facades\TwitterCard::generate() !!}
         {!! \Artesaos\SEOTools\Facades\JsonLd::generate() !!}
 
-        <title inertia>{{ config('app.name', 'FortCo ERP') }}</title>
+        <title inertia>{{ config('app.name', 'Fortco Company Limited') }}</title>
 
         <!-- Favicons -->
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">

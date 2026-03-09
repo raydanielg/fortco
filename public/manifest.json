@@ -1,7 +1,7 @@
 {
-  "name": "FortCo ERP - Mfumo wa Uongozi wa Miradi ya Ujenzi",
-  "short_name": "FortCo ERP",
-  "description": "Professional construction management system for East Africa. Mfumo wa uongozi wa miradi ya ujenzi kwa Afrika Mashariki.",
+  "name": "Fortco Company Limited - Kampuni ya Ujenzi",
+  "short_name": "Fortco",
+  "description": "Leading construction company in East Africa providing building, road, and infrastructure services. Kampuni kuu ya ujenzi Afrika Mashariki inayotoa huduma za ujenzi wa majengo, barabara na miundombinu.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

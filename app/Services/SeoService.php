@@ -51,42 +51,66 @@ class SeoService
     public function addOrganizationSchema()
     {
         JsonLd::setType('Organization');
-        JsonLd::addValue('name', 'FortCo ERP');
-        JsonLd::addValue('alternateName', 'FortCo Construction Management System');
-        JsonLd::addValue('description', 'Mfumo mkuu wa uongozi wa miradi ya ujenzi, usimamizi wa wafanyakazi, na huduma za kiufundi. Professional construction ERP system for project management in East Africa.');
+        JsonLd::addValue('name', 'Fortco Company Limited');
+        JsonLd::addValue('alternateName', 'Fortco Construction Company');
+        JsonLd::addValue('description', 'Fortco Company Limited ni kampuni kuu ya ujenzi inayotoa huduma za ujenzi wa majengo, barabara, na miundombinu Afrika Mashariki. Tunatoa huduma za ubora wa hali ya juu kwa miradi yote ya ujenzi. Leading construction company providing building, road, and infrastructure construction services across East Africa.');
         JsonLd::addValue('url', url('/'));
         JsonLd::addValue('logo', url('/construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg'));
+        JsonLd::addValue('foundingDate', '2020');
+        JsonLd::addValue('numberOfEmployees', '100-500');
         
         JsonLd::addValue('address', [
             '@type' => 'PostalAddress',
-            'addressLocality' => 'Nairobi',
-            'addressCountry' => 'Kenya',
-            'addressRegion' => 'East Africa'
+            'streetAddress' => 'Dar es Salaam Business District',
+            'addressLocality' => 'Dar es Salaam',
+            'addressRegion' => 'Dar es Salaam',
+            'addressCountry' => 'Tanzania',
+            'postalCode' => '12345'
         ]);
         
         JsonLd::addValue('contactPoint', [
             '@type' => 'ContactPoint',
-            'telephone' => '+254-XXX-XXXX',
+            'telephone' => '+255-XXX-XXXX',
             'contactType' => 'customer service',
-            'availableLanguage' => ['Swahili', 'English']
+            'availableLanguage' => ['Swahili', 'English'],
+            'areaServed' => 'East Africa'
         ]);
         
         JsonLd::addValue('sameAs', [
-            'https://www.facebook.com/fortcoerp',
-            'https://www.twitter.com/fortcoerp',
-            'https://www.linkedin.com/company/fortcoerp'
+            'https://www.facebook.com/fortcocompany',
+            'https://www.twitter.com/fortcocompany',
+            'https://www.linkedin.com/company/fortco-company-limited',
+            'https://www.instagram.com/fortcocompany'
         ]);
         
         JsonLd::addValue('areaServed', [
-            'Kenya', 'Tanzania', 'Uganda', 'Rwanda', 'East Africa'
+            'Tanzania', 'Kenya', 'Uganda', 'Rwanda', 'Burundi', 'East Africa'
         ]);
         
         JsonLd::addValue('serviceType', [
-            'Construction Management',
+            'Building Construction',
+            'Road Construction',
+            'Bridge Construction',
+            'Infrastructure Development',
+            'Residential Construction',
+            'Commercial Construction',
+            'Industrial Construction',
+            'Civil Engineering',
             'Project Management',
-            'ERP Software',
-            'Workforce Management',
-            'Technical Services'
+            'Construction Supervision'
+        ]);
+        
+        JsonLd::addValue('knowsAbout', [
+            'Building Construction',
+            'Road Construction',
+            'Infrastructure Development',
+            'Civil Engineering',
+            'Project Management',
+            'Construction Materials',
+            'Quality Control',
+            'Safety Management',
+            'Construction Planning',
+            'Structural Engineering'
         ]);
     }
     
@@ -181,7 +205,7 @@ class SeoService
         JsonLd::addValue('description', $service['description']);
         JsonLd::addValue('provider', [
             '@type' => 'Organization',
-            'name' => 'FortCo ERP'
+            'name' => 'Fortco Company Limited'
         ]);
         JsonLd::addValue('areaServed', 'East Africa');
         JsonLd::addValue('serviceType', $service['type']);
@@ -197,21 +221,23 @@ class SeoService
     }
     
     /**
-     * Get default keywords for construction/ERP domain
+     * Get default keywords for construction company
      */
     private function getDefaultKeywords()
     {
         return [
             // Core Swahili terms
-            'mfumo wa uongozi', 'ujenzi', 'miradi', 'usimamizi', 'huduma za ujenzi',
-            'wafanyakazi', 'vifaa vya ujenzi', 'uongozi wa kampuni', 'teknolojia ya ujenzi',
+            'kampuni ya ujenzi', 'ujenzi', 'miradi ya ujenzi', 'huduma za ujenzi',
+            'wafanyakazi wa ujenzi', 'vifaa vya ujenzi', 'ujenzi wa majengo', 'ujenzi wa barabara',
+            'makontrakta wa ujenzi', 'injinia wa ujenzi', 'uongozi wa miradi', 'usimamizi wa ujenzi',
             
             // Core English terms
-            'construction management', 'ERP system', 'project management', 'workforce management',
-            'construction technology', 'building management', 'construction services',
+            'construction company', 'building construction', 'construction services', 'construction contractor',
+            'construction projects', 'infrastructure construction', 'civil engineering', 'building contractor',
+            'construction management', 'project management', 'construction planning', 'quality construction',
             
             // Location terms
-            'Kenya', 'Tanzania', 'Uganda', 'East Africa', 'Nairobi', 'Dar es Salaam'
+            'Tanzania', 'Kenya', 'Uganda', 'East Africa', 'Dar es Salaam', 'Nairobi', 'Kampala'
         ];
     }
     
@@ -223,13 +249,13 @@ class SeoService
         $links = [
             'home' => [
                 'url' => '/',
-                'anchor' => 'Mfumo wa Uongozi wa Miradi | Construction Management System',
-                'title' => 'FortCo ERP - Nyumbani'
+                'anchor' => 'Kampuni ya Ujenzi | Leading Construction Company',
+                'title' => 'Fortco Company Limited - Nyumbani'
             ],
             'services' => [
                 'url' => '/services',
                 'anchor' => 'Huduma za Ujenzi | Construction Services',
-                'title' => 'Huduma zetu za ujenzi na usimamizi wa miradi'
+                'title' => 'Huduma zetu za ujenzi wa majengo na miundombinu'
             ],
             'projects' => [
                 'url' => '/projects',
@@ -239,12 +265,12 @@ class SeoService
             'about' => [
                 'url' => '/about',
                 'anchor' => 'Kuhusu Sisi | About Us',
-                'title' => 'Kuhusu FortCo ERP na huduma zetu'
+                'title' => 'Kuhusu Fortco Company Limited na huduma zetu'
             ],
             'contact' => [
                 'url' => '/contact',
                 'anchor' => 'Wasiliana Nasi | Contact Us',
-                'title' => 'Wasiliana na timu yetu ya wataalamu'
+                'title' => 'Wasiliana na timu yetu ya wataalamu wa ujenzi'
             ]
         ];
         

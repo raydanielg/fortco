@@ -1,5 +1,5 @@
-# Robots.txt for FortCo ERP - Construction Management System
-# Mfumo wa Uongozi wa Miradi ya Ujenzi
+# Robots.txt for Fortco Company Limited - Construction Company
+# Kampuni ya Ujenzi - Fortco Company Limited
 
 # Allow all crawlers to access public content
 User-agent: *
