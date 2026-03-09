@@ -422,10 +422,12 @@ export default function Sidebar({
     const [query, setQuery] = useState('');
 
     const menu = useMemo(() => {
-        const roleNames = Array.isArray(auth.user.roles) 
-            ? auth.user.roles.map(r => typeof r === 'string' ? r : r.name)
+        const roleNames = Array.isArray(auth?.user?.roles)
+            ? auth.user.roles.map((r) => (typeof r === 'string' ? r : r.name))
             : [];
-        const isSuperAdmin = roleNames.includes('Super Admin') || auth.user.is_super_admin;
+        const isSuperAdmin = roleNames.includes('Super Admin') || !!auth?.user?.is_super_admin;
+        const canUserManagement =
+            isSuperAdmin || roleNames.includes('Admin') || roleNames.includes('HR');
 
         if (!isSuperAdmin) {
             const items = [
@@ -589,7 +591,7 @@ export default function Sidebar({
                 href: route('admin.faq'),
             },
         ];
-    }, [isSuperAdmin, canUserManagement]);
+    }, [auth?.user?.roles, auth?.user?.is_super_admin]);
 
     const filteredMenu = useMemo(() => {
         const q = query.trim().toLowerCase();
