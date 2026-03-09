@@ -16,7 +16,7 @@ export default function GuestLayout({
                         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/50 sm:p-8">
                             <div className="flex items-center justify-center">
                                 <Link href="/" aria-label="Home">
-                                    <img src="/logo.png" className="h-10 w-auto" alt="Fortco Logo" />
+                                    <img src="/logo_new.png" className="h-10 w-auto" alt="Fortco Logo" />
                                 </Link>
                             </div>
 

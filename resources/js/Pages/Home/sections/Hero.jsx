@@ -122,26 +122,10 @@ export default function Hero() {
                             Built for Tanzania Real Estate & Construction
                         </div>
                         <h1 className="mt-8 text-4xl font-black tracking-tight text-white sm:text-6xl lg:leading-[1.1]">
-                            Manage your{' '}
-                            <span
-                                className={`inline-block text-primary-300 drop-shadow-[0_2px_10px_rgba(147,197,253,0.35)] transition-all duration-500 ease-out ${
-                                    propertyVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-                                }`}
-                            >
-                                {propertyWords[propertyWordIndex]}
-                            </span>{' '}
-                            and{' '}
-                            <span
-                                className={`inline-block text-red-300 drop-shadow-[0_2px_10px_rgba(252,165,165,0.35)] transition-all duration-500 ease-out ${
-                                    projectVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-                                }`}
-                            >
-                                {projectWords[projectWordIndex]}
-                            </span>{' '}
-                            with ease.
+                            <span className="text-brand-green-400">Fortco Company Limited:</span> Your Partner in Real Estate & Construction
                         </h1>
                         <p className="mt-6 text-lg leading-relaxed text-white/85 max-w-xl font-medium">
-                            Fortco Company Limited provides a unified platform for property management, construction tracking, and loan processing. Designed for modern teams in Tanzania.
+                            Empowering modern teams across Tanzania with a unified platform for property management, construction tracking, and professional growth.
                         </p>
                         <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
                             <Link

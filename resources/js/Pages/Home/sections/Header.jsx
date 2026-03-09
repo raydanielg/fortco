@@ -85,7 +85,7 @@ export default function Header({ canLogin, canRegister }) {
             <nav className="bg-sand-200/90 border-b border-black/5 px-4 lg:px-6 py-3 backdrop-blur-md">
                 <div className="flex flex-wrap items-center justify-between mx-auto max-w-screen-xl">
                     <Link href="/" className="flex items-center">
-                        <img src="/logo.png" className="h-9 w-auto" alt="Fortco Logo" />
+                        <img src="/logo_new.png" className="h-9 w-auto" alt="Fortco Logo" />
                     </Link>
 
                     <div className="flex items-center gap-3 lg:order-3">

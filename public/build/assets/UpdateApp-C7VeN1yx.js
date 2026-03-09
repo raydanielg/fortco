@@ -1,1 +1,0 @@
-import{j as e}from"./app-CH3L2Drl.js";import t from"./SettingsSectionShell-BTmpXPhn.js";function a(){return e.jsx(t,{title:"Update App",description:"Manage system updates, version checks, and maintenance operations.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{a as default};

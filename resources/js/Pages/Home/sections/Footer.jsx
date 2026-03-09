@@ -17,7 +17,7 @@ export default function Footer() {
                 <div className="grid gap-10 lg:grid-cols-4">
                     <div>
                         <div className="flex items-center gap-3">
-                            <img src="/logo.png" alt="Fortco" className="h-12 w-12 rounded-2xl bg-white p-1 object-contain shadow-sm" loading="lazy" />
+                            <img src="/logo_new.png" alt="Fortco" className="h-12 w-12 rounded-2xl bg-white p-1 object-contain shadow-sm" loading="lazy" />
                             <div>
                                 <div className="text-base font-black tracking-tight text-slate-900 dark:text-white">Fortco</div>
                                 <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">

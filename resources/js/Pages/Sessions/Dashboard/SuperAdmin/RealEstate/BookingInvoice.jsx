@@ -76,7 +76,7 @@ export default function BookingInvoice({ booking }) {
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                 <div className="flex items-start gap-4">
                                     <div className="h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                                        <img src="/logo.png" alt="" className="h-full w-full object-contain p-2" />
+                                        <img src="/logo_new.png" alt="" className="h-full w-full object-contain p-2" />
                                     </div>
                                     <div>
                                         <div className="text-[16px] font-black tracking-tight text-slate-900">FORTCO REAL ESTATE</div>
