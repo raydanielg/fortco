@@ -190,6 +190,186 @@ Route::get('/services', function () {
     ]);
 })->name('services.page');
 
+// SEO-optimized routes for construction management
+Route::get('/projects', function () {
+    return Inertia::render('Projects', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('projects.page');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('contact.page');
+
+Route::get('/faq', function () {
+    $seoController = new \App\Http\Controllers\SeoController(new \App\Services\SeoService());
+    return Inertia::render('Faq', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'faqs' => $seoController->getFaqData(),
+        'organizationSchema' => $seoController->getOrganizationSchema(),
+    ]);
+})->name('faq.page');
+
+Route::get('/testimonials', function () {
+    $seoController = new \App\Http\Controllers\SeoController(new \App\Services\SeoService());
+    $reviewsData = $seoController->getReviewsData();
+    return Inertia::render('Testimonials', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'reviews' => $reviewsData['reviews'],
+        'aggregateRating' => $reviewsData['aggregateRating'],
+    ]);
+})->name('testimonials.page');
+
+// Construction management specific pages
+Route::get('/construction-management', function () {
+    return Inertia::render('ConstructionManagement', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('construction-management.page');
+
+Route::get('/project-management', function () {
+    return Inertia::render('ProjectManagement', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('project-management.page');
+
+Route::get('/workforce-management', function () {
+    return Inertia::render('WorkforceManagement', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('workforce-management.page');
+
+Route::get('/erp-software', function () {
+    return Inertia::render('ErpSoftware', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('erp-software.page');
+
+// Swahili optimized routes
+Route::get('/uongozi-miradi', function () {
+    return Inertia::render('ConstructionManagement', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('uongozi-miradi.page');
+
+Route::get('/huduma-ujenzi', function () {
+    return Inertia::render('Services', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('huduma-ujenzi.page');
+
+Route::get('/miradi-ujenzi', function () {
+    return Inertia::render('Projects', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('miradi-ujenzi.page');
+
+Route::get('/usimamizi-wafanyakazi', function () {
+    return Inertia::render('WorkforceManagement', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('usimamizi-wafanyakazi.page');
+
+Route::get('/maswali-na-majibu', function () {
+    $seoController = new \App\Http\Controllers\SeoController(new \App\Services\SeoService());
+    return Inertia::render('Faq', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'faqs' => $seoController->getFaqData(),
+        'organizationSchema' => $seoController->getOrganizationSchema(),
+        'language' => 'sw',
+    ]);
+})->name('maswali-na-majibu.page');
+
+Route::get('/ushahidi', function () {
+    $seoController = new \App\Http\Controllers\SeoController(new \App\Services\SeoService());
+    $reviewsData = $seoController->getReviewsData();
+    return Inertia::render('Testimonials', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'reviews' => $reviewsData['reviews'],
+        'aggregateRating' => $reviewsData['aggregateRating'],
+        'language' => 'sw',
+    ]);
+})->name('ushahidi.page');
+
+Route::get('/picha', function () {
+    return Inertia::render('Gallery/Index', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('picha.page');
+
+Route::get('/msaada', function () {
+    return Inertia::render('Support', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'language' => 'sw',
+    ]);
+})->name('msaada.page');
+
+// Location-based SEO pages
+Route::get('/construction-kenya', function () {
+    return Inertia::render('LocationPages/Kenya', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'country' => 'Kenya',
+    ]);
+})->name('construction-kenya.page');
+
+Route::get('/construction-tanzania', function () {
+    return Inertia::render('LocationPages/Tanzania', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'country' => 'Tanzania',
+    ]);
+})->name('construction-tanzania.page');
+
+Route::get('/construction-uganda', function () {
+    return Inertia::render('LocationPages/Uganda', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'country' => 'Uganda',
+    ]);
+})->name('construction-uganda.page');
+
+Route::get('/ujenzi-kenya', function () {
+    return Inertia::render('LocationPages/Kenya', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'country' => 'Kenya',
+        'language' => 'sw',
+    ]);
+})->name('ujenzi-kenya.page');
+
+Route::get('/ujenzi-tanzania', function () {
+    return Inertia::render('LocationPages/Tanzania', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'country' => 'Tanzania',
+        'language' => 'sw',
+    ]);
+})->name('ujenzi-tanzania.page');
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])

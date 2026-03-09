@@ -5,15 +5,41 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <!-- SEO Meta Tags -->
+        {!! SEOMeta::generate() !!}
+        {!! OpenGraph::generate() !!}
+        {!! TwitterCard::generate() !!}
+        {!! JsonLd::generate() !!}
 
-        <link rel="icon" type="image/png" href="/favicon_new.png">
-        <link rel="apple-touch-icon" href="/favicon_new.png">
+        <title inertia>{{ config('app.name', 'FortCo ERP') }}</title>
 
-        <!-- Fonts -->
+        <!-- Favicons -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="apple-touch-icon" href="/construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg">
+        <link rel="manifest" href="/manifest.json">
+
+        <!-- Preconnect for performance -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="dns-prefetch" href="//www.google-analytics.com">
+        <link rel="dns-prefetch" href="//fonts.googleapis.com">
+
+        <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=SN+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
+        <!-- Additional SEO Meta Tags -->
+        <meta name="theme-color" content="#2563eb">
+        <meta name="msapplication-TileColor" content="#2563eb">
+        <meta name="application-name" content="FortCo ERP">
+        <meta name="apple-mobile-web-app-title" content="FortCo ERP">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        
+        <!-- Geo Tags for East Africa -->
+        <meta name="geo.region" content="KE">
+        <meta name="geo.placename" content="East Africa">
+        <meta name="geo.position" content="-1.286389;36.817223">
+        <meta name="ICBM" content="-1.286389, 36.817223">
 
         <!-- Scripts -->
         @routes

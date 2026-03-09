@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckSecurityMaintenance::class,
             \App\Http\Middleware\EnsureNotBanned::class,
             \App\Http\Middleware\LogHttpRequests::class,
+            \App\Http\Middleware\SeoMiddleware::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);

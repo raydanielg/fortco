@@ -1,14 +1,41 @@
-# Robots.txt for Fortco Company Limited
-# https://fortco.co.tz/robots.txt
+# Robots.txt for FortCo ERP - Construction Management System
+# Mfumo wa Uongozi wa Miradi ya Ujenzi
 
 # Allow all crawlers to access public content
 User-agent: *
 Allow: /
 Allow: /about
 Allow: /services
-Allow: /portfolio
-Allow: /properties
+Allow: /projects
+Allow: /contact
 Allow: /gallery
+Allow: /faq
+Allow: /testimonials
+
+# Allow Swahili optimized pages
+Allow: /uongozi-miradi
+Allow: /huduma-ujenzi
+Allow: /miradi-ujenzi
+Allow: /usimamizi-wafanyakazi
+Allow: /maswali-na-majibu
+Allow: /ushahidi
+Allow: /picha
+Allow: /msaada
+
+# Allow location-based pages
+Allow: /construction-kenya
+Allow: /construction-tanzania
+Allow: /construction-uganda
+Allow: /ujenzi-kenya
+Allow: /ujenzi-tanzania
+
+# Allow construction management pages
+Allow: /construction-management
+Allow: /project-management
+Allow: /workforce-management
+Allow: /erp-software
+
+# Allow static assets
 Allow: *.css
 Allow: *.js
 Allow: *.png
@@ -17,8 +44,8 @@ Allow: *.jpeg
 Allow: *.gif
 Allow: *.webp
 Allow: *.svg
-Allow: /logo_new.png
-Allow: /favicon_new.png
+Allow: /construction-site-architecture-black-woman-with-smartphone-typing-connection-african-person-engineering-inspector-with-cellphone-safety-online-reading-with-digital-app-internet_590464-510750.jpg
+Allow: /favicon.svg
 
 # Disallow private/admin areas
 Disallow: /login
@@ -28,8 +55,6 @@ Disallow: /dashboard
 Disallow: /profile
 Disallow: /security/
 Disallow: /api/
-Disallow: /helpdesk/
-Disallow: /support/
 Disallow: /webhooks/
 Disallow: /banned
 Disallow: /maintenance
@@ -45,8 +70,18 @@ Disallow: /package.json
 Disallow: /webpack.mix.js
 Disallow: /vite.config.js
 
+# Special instructions for search engines
+User-agent: Googlebot
+Crawl-delay: 1
+
+User-agent: Bingbot
+Crawl-delay: 2
+
+User-agent: Slurp
+Crawl-delay: 2
+
 # Crawl delay for respectful crawling
 Crawl-delay: 1
 
 # Sitemaps
-Sitemap: https://fortco.co.tz/sitemap.xml
+Sitemap: /sitemap.xml
