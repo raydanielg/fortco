@@ -54,8 +54,20 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
     const roles = page.props.auth?.roles || [];
     const isSuperAdmin = roles.includes('Super Admin');
     const canUserManagement = roles.includes('Super Admin') || roles.includes('Admin') || roles.includes('HR');
+    const canAccessSettings = roles.includes('Super Admin') || roles.includes('Admin');
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [darkMode, setDarkMode] = useState(() => {
+        try {
+            const saved = localStorage.getItem('fortco.theme.mode');
+            if (saved === 'dark') return true;
+            if (saved === 'light') return false;
+            return document.documentElement.classList.contains('dark');
+        } catch (e) {
+            return document.documentElement.classList.contains('dark');
+        }
+    });
 
     const crumbText = useMemo(() => {
         if (!breadcrumbs || breadcrumbs.length === 0) return null;
@@ -97,6 +109,15 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
                 />
             )}
 
+            {profileOpen && (
+                <button
+                    type="button"
+                    className="fixed inset-0 z-30"
+                    aria-label="Close profile menu"
+                    onClick={() => setProfileOpen(false)}
+                />
+            )}
+
             <Sidebar
                 title={title}
                 userName={user?.name || 'Account'}
@@ -108,7 +129,16 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
 
             <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur sm:pl-64">
                 <div className="mx-auto grid h-12 max-w-screen-2xl grid-cols-[1fr,auto] items-center px-3 sm:px-4">
-                    <div />
+                    <div className="min-w-0">
+                        <div className="truncate text-[12px] font-semibold text-slate-900">
+                            {title || 'Dashboard'}
+                        </div>
+                        {crumbText && (
+                            <div className="truncate text-[11px] text-slate-500">
+                                {crumbText}
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex items-center gap-1.5 justify-self-end">
                         <button
@@ -119,39 +149,112 @@ export default function DashboardLayout({ title, breadcrumbs = [], children }) {
                             <IconBell className="h-4 w-4" />
                         </button>
 
-                        <button
-                            type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                            aria-label="Settings"
-                        >
-                            <IconCog className="h-4 w-4" />
-                        </button>
+                        {canAccessSettings && (
+                            <Link
+                                href={route('admin.settings')}
+                                className="inline-flex h-8 items-center gap-2 rounded-lg px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                            >
+                                <IconCog className="h-4 w-4" />
+                                Settings
+                            </Link>
+                        )}
 
-                        <Link
-                            href={route('logout')}
-                            method="post"
-                            as="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                            aria-label="Logout"
-                        >
-                            <IconLogout className="h-4 w-4" />
-                        </Link>
+                        <div className="relative ml-2 hidden sm:block">
+                            <button
+                                type="button"
+                                onClick={() => setProfileOpen((v) => !v)}
+                                className="inline-flex items-center gap-2 rounded-lg px-2 py-1 text-left hover:bg-slate-100"
+                                aria-haspopup="menu"
+                                aria-expanded={profileOpen ? 'true' : 'false'}
+                            >
+                                <div className="min-w-0">
+                                    <div className="truncate text-[11px] font-semibold leading-4 text-slate-900">
+                                        {user?.name || 'Account'}
+                                    </div>
+                                    <div className="truncate text-[11px] leading-4 text-slate-500">
+                                        {user?.email || ''}
+                                    </div>
+                                </div>
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-[11px] font-bold text-white">
+                                    {(user?.name || 'U')
+                                        .trim()
+                                        .slice(0, 1)
+                                        .toUpperCase()}
+                                </div>
+                            </button>
 
-                        <div className="ml-2 hidden min-w-0 items-center gap-2 sm:flex">
-                            <div className="text-right">
-                                <div className="truncate text-[11px] font-semibold leading-4 text-slate-900">
-                                    Workspace
+                            {profileOpen && (
+                                <div
+                                    role="menu"
+                                    className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                                >
+                                    <div className="px-3 py-2">
+                                        <div className="truncate text-[12px] font-semibold text-slate-900">
+                                            {user?.name || 'Account'}
+                                        </div>
+                                        <div className="truncate text-[11px] text-slate-500">
+                                            {user?.email || ''}
+                                        </div>
+                                    </div>
+
+                                    <div className="h-px bg-slate-200" />
+
+                                    <div className="p-1">
+                                        <Link
+                                            href={route('profile.edit')}
+                                            className="block rounded-lg px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                                            onClick={() => setProfileOpen(false)}
+                                            role="menuitem"
+                                        >
+                                            Profile
+                                        </Link>
+
+                                        <button
+                                            type="button"
+                                            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                                            onClick={() => {
+                                                const next = !darkMode;
+                                                setDarkMode(next);
+                                                try {
+                                                    localStorage.setItem('fortco.theme.mode', next ? 'dark' : 'light');
+                                                } catch (e) {
+                                                    // ignore
+                                                }
+                                                document.documentElement.classList.toggle('dark', next);
+                                            }}
+                                            role="menuitem"
+                                        >
+                                            <span>Dark mode</span>
+                                            <span className="text-[11px] text-slate-500">
+                                                {darkMode ? 'On' : 'Off'}
+                                            </span>
+                                        </button>
+
+                                        {canAccessSettings && (
+                                            <Link
+                                                href={route('admin.settings')}
+                                                className="block rounded-lg px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                                                onClick={() => setProfileOpen(false)}
+                                                role="menuitem"
+                                            >
+                                                Settings
+                                            </Link>
+                                        )}
+
+                                        <Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                                            onClick={() => setProfileOpen(false)}
+                                            role="menuitem"
+                                        >
+                                            <IconLogout className="h-4 w-4" />
+                                            Logout
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="truncate text-[11px] leading-4 text-slate-500">
-                                    {user?.name || 'Account'}
-                                </div>
-                            </div>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-[11px] font-bold text-white">
-                                {(user?.name || 'U')
-                                    .trim()
-                                    .slice(0, 1)
-                                    .toUpperCase()}
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

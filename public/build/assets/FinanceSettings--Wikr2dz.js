@@ -1,1 +1,0 @@
-import{j as e}from"./app-C4XhbqCX.js";import t from"./SettingsSectionShell-D-bxMlzS.js";function s(){return e.jsx(t,{title:"Finance Settings",description:"Configure financial rules, defaults, and accounting preferences.",children:e.jsx("div",{className:"text-[12px] text-slate-600",children:"This section will be available soon."})})}export{s as default};

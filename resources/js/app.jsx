@@ -24,6 +24,16 @@ const applyTheme = (theme) => {
     }
 };
 
+const applyPersistedMode = () => {
+    try {
+        const saved = localStorage.getItem('fortco.theme.mode');
+        if (saved !== 'dark' && saved !== 'light') return;
+        document.documentElement.classList.toggle('dark', saved === 'dark');
+    } catch (e) {
+        // ignore
+    }
+};
+
 const appName = 'Fortco Company Limited';
 
 createInertiaApp({
@@ -35,6 +45,8 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
+
+        applyPersistedMode();
 
         applyTheme(props?.initialPage?.props?.theme);
 
